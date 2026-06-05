@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Siddharth Nehra — Research & Developer. Portfolio, projects, and contact.">
+  <meta name="author" content="Siddharth Nehra">
+  <title>Siddharth Nehra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg: #07080d;
+      --bg-elevated: #0e1018;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-hover: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f4f4f6;
+      --text-muted: #8b8f9a;
+      --accent: #6ee7b7;
+      --accent-dim: rgba(110, 231, 183, 0.15);
+      --accent-glow: rgba(110, 231, 183, 0.35);
+      --violet: #a78bfa;
+      --gradient-1: #6ee7b7;
+      --gradient-2: #38bdf8;
+      --gradient-3: #a78bfa;
+      --radius: 16px;
+      --radius-lg: 24px;
+      --font: 'Outfit', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --nav-h: 72px;
+    }
+
+    html.light {
+      --bg: #f8f9fc;
+      --bg-elevated: #ffffff;
+      --surface: rgba(15, 23, 42, 0.04);
+      --surface-hover: rgba(15, 23, 42, 0.07);
+      --border: rgba(15, 23, 42, 0.1);
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #059669;
+      --accent-dim: rgba(5, 150, 105, 0.12);
+      --accent-glow: rgba(5, 150, 105, 0.25);
+      --violet: #7c3aed;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    .noise {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.45;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 18s ease-in-out infinite;
+    }
+    .orb-1 { width: 420px; height: 420px; background: var(--gradient-1); top: -120px; right: -80px; }
+    .orb-2 { width: 320px; height: 320px; background: var(--gradient-2); bottom: 20%; left: -100px; animation-delay: -6s; }
+    .orb-3 { width: 280px; height: 280px; background: var(--gradient-3); bottom: -80px; right: 20%; animation-delay: -12s; opacity: 0.3; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -20px) scale(1.05); }
+      66% { transform: translate(-20px, 15px) scale(0.95); }
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-h);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(1.25rem, 4vw, 3rem);
+      background: color-mix(in srgb, var(--bg) 75%, transparent);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.4s;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+    #theme-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+    #theme-toggle:hover { background: var(--surface-hover); transform: scale(1.05); }
+    #theme-toggle svg { width: 18px; height: 18px; }
+
+    .nav-cta {
+      padding: 0.55rem 1.1rem;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #042f1e;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    html.light .nav-cta { color: #fff; }
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--accent-glow);
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    /* Layout */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 4vw, 3rem);
+    }
+
+    section { padding: 5rem 0; }
+
+    /* Hero */
+    .hero {
+      min-height: calc(100vh - var(--nav-h));
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      padding-top: calc(var(--nav-h) + 2rem);
+      padding-bottom: 4rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem 0.35rem 0.5rem;
+      border-radius: 100px;
+      background: var(--accent-dim);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s ease both;
+    }
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 3.75rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tagline {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 28rem;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #042f1e;
+    }
+    html.light .btn-primary { color: #fff; }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px var(--accent-glow);
+    }
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--surface-hover); transform: translateY(-2px); }
+
+    .hero-visual {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      animation: fadeUp 1s 0.2s ease both;
+    }
+
+    .avatar-ring {
+      position: relative;
+      width: min(340px, 90vw);
+      aspect-ratio: 1;
+    }
+    .avatar-ring::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: conic-gradient(from 180deg, var(--gradient-1), var(--gradient-2), var(--gradient-3), var(--gradient-1));
+      animation: spin 8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .avatar-inner {
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--bg-elevated);
+      border: 3px solid var(--bg);
+    }
+    .avatar-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .floating-card {
+      position: absolute;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--bg-elevated) 90%, transparent);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      animation: bob 4s ease-in-out infinite;
+    }
+    .floating-card svg { width: 16px; height: 16px; color: var(--accent); }
+    .fc-1 { top: 8%; left: -8%; animation-delay: 0s; }
+    .fc-2 { bottom: 15%; right: -12%; animation-delay: -2s; }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: -1rem;
+      padding-bottom: 2rem;
+    }
+    .stat {
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .stat:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: var(--mono);
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Section headers */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 2.5rem;
+    }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    .about-text p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+    .about-text p strong { color: var(--text); font-weight: 600; }
+
+    .highlights {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .highlight-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: transform 0.3s, background 0.3s;
+    }
+    .highlight-item:hover {
+      transform: translateX(6px);
+      background: var(--surface-hover);
+    }
+    .highlight-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--accent-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--accent);
+    }
+    .highlight-icon svg { width: 22px; height: 22px; }
+    .highlight-item h4 { font-size: 1rem; margin-bottom: 0.25rem; }
+    .highlight-item p { font-size: 0.875rem; color: var(--text-muted); }
+
+    /* Skills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .skill-card {
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .skill-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+    }
+    .skill-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .skill-card h3 svg { width: 20px; height: 20px; color: var(--violet); }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 8px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* Connect */
+    .connect-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .connect-card {
+      padding: 2rem 1.5rem;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s, border-color 0.3s, background 0.3s;
+    }
+    .connect-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent);
+      background: var(--surface-hover);
+    }
+    .connect-card .icon-wrap {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 1rem;
+      border-radius: 16px;
+      background: var(--accent-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+    .connect-card .icon-wrap svg { width: 26px; height: 26px; }
+    .connect-card h3 { font-size: 1.1rem; margin-bottom: 0.35rem; }
+    .connect-card p { font-size: 0.85rem; color: var(--text-muted); word-break: break-all; }
+
+    /* Contact */
+    .contact-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      padding: 2.5rem;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--accent-dim), transparent 60%),
+                  var(--surface);
+      border: 1px solid var(--border);
+    }
+    .contact-list { list-style: none; }
+    .contact-list li {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .contact-list li:last-child { border-bottom: none; }
+    .contact-list .ci {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .contact-list .ci svg { width: 18px; height: 18px; }
+    .contact-list .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .contact-list a, .contact-list span {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .contact-list a:hover { color: var(--accent); }
+
+    .contact-cta h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .contact-cta p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 2rem;
+      padding: 2rem 0 3rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    footer strong { color: var(--text); }
+
+    /* Reveal animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; text-align: center; }
+      .hero-tagline { margin-left: auto; margin-right: auto; }
+      .hero-actions { justify-content: center; }
+      .hero-visual { order: -1; }
+      .floating-card { display: none; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .about-grid, .skills-grid, .connect-grid, .contact-panel { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .menu-btn { display: flex; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: var(--nav-h);
+        left: 0;
+        right: 0;
+        background: var(--bg-elevated);
+        padding: 1.5rem;
+        gap: 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="orb orb-3" aria-hidden="true"></div>
+
+  <nav>
+    <a href="#" class="logo">SN<span>.</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#connect">Connect</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button id="theme-toggle" type="button" aria-label="Toggle theme">
+        <i data-lucide="moon"></i>
+      </button>
+      <a href="#contact" class="nav-cta">Say hello</a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-label="Menu">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Open to collaborations
+        </div>
+        <h1>Hi, I'm <span class="gradient">Siddharth Nehra</span></h1>
+        <p class="hero-tagline">
+          Research &amp; Developer building thoughtful digital experiences — from interfaces to intelligent systems.
+        </p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary">
+            Get in touch
+            <i data-lucide="arrow-right"></i>
+          </a>
+          <a href="https://github.com/Siddharth-Nehra" target="_blank" rel="noopener" class="btn btn-ghost">
+            <i data-lucide="github"></i>
+            View GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="avatar-ring">
+          <div class="avatar-inner">
+            <img src="sidh.jpeg" alt="Siddharth Nehra">
+          </div>
+        </div>
+        <div class="floating-card fc-1">
+          <i data-lucide="code-2"></i>
+          Research &amp; Dev
+        </div>
+        <div class="floating-card fc-2">
+          <i data-lucide="sparkles"></i>
+          Building what's next
+        </div>
+      </div>
+    </section>
+
+    <div class="stats reveal">
+      <div class="stat">
+        <div class="stat-value">R&amp;D</div>
+        <div class="stat-label">Core focus</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">UI</div>
+        <div class="stat-label">Design craft</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">Full</div>
+        <div class="stat-label">Stack mindset</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">∞</div>
+        <div class="stat-label">Curiosity</div>
+      </div>
+    </div>
+
+    <section id="about" class="reveal">
+      <p class="section-label">// about</p>
+      <h2 class="section-title">Who I am</h2>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            I'm <strong>Siddharth Nehra</strong> — a developer who sits at the intersection of
+            <strong>research</strong>, <strong>product</strong>, and <strong>craft</strong>.
+            I love turning complex ideas into clean, usable software.
+          </p>
+          <p>
+            Whether it's prototyping new features, refining UI flows, or digging into how systems work under the hood,
+            I bring curiosity and precision to every project. This site is my personal space — one profile, one vision.
+          </p>
+        </div>
+        <div class="highlights">
+          <div class="highlight-item">
+            <div class="highlight-icon"><i data-lucide="microscope"></i></div>
+            <div>
+              <h4>Research-driven</h4>
+              <p>Explore problems deeply before shipping solutions.</p>
+            </div>
+          </div>
+          <div class="highlight-item">
+            <div class="highlight-icon"><i data-lucide="layers"></i></div>
+            <div>
+              <h4>End-to-end builder</h4>
+              <p>From concept and design through implementation.</p>
+            </div>
+          </div>
+          <div class="highlight-item">
+            <div class="highlight-icon"><i data-lucide="rocket"></i></div>
+            <div>
+              <h4>Always learning</h4>
+              <p>Staying current with tools, frameworks, and best practices.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="reveal">
+      <p class="section-label">// expertise</p>
+      <h2 class="section-title">What I work with</h2>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <h3><i data-lucide="palette"></i> Frontend</h3>
+          <div class="tags">
+            <span class="tag">HTML / CSS</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">Responsive UI</span>
+            <span class="tag">UX patterns</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h3><i data-lucide="cpu"></i> Development</h3>
+          <div class="tags">
+            <span class="tag">Full-stack</span>
+            <span class="tag">APIs</span>
+            <span class="tag">Git &amp; GitHub</span>
+            <span class="tag">Problem solving</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h3><i data-lucide="flask-conical"></i> Research</h3>
+          <div class="tags">
+            <span class="tag">Prototyping</span>
+            <span class="tag">Experimentation</span>
+            <span class="tag">Documentation</span>
+            <span class="tag">Iteration</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="connect" class="reveal">
+      <p class="section-label">// online</p>
+      <h2 class="section-title">Find me elsewhere</h2>
+      <div class="connect-grid">
+        <a href="https://www.linkedin.com/in/siddharth-nehra-ab0825366" target="_blank" rel="noopener" class="connect-card">
+          <div class="icon-wrap"><i data-lucide="linkedin"></i></div>
+          <h3>LinkedIn</h3>
+          <p>siddharth-nehra</p>
+        </a>
+        <a href="https://github.com/Siddharth-Nehra" target="_blank" rel="noopener" class="connect-card">
+          <div class="icon-wrap"><i data-lucide="github"></i></div>
+          <h3>GitHub</h3>
+          <p>Siddharth-Nehra</p>
+        </a>
+        <a href="mailto:nehrasiddharth669@gmail.com" class="connect-card">
+          <div class="icon-wrap"><i data-lucide="mail"></i></div>
+          <h3>Email</h3>
+          <p>nehrasiddharth669@gmail.com</p>
+        </a>
+      </div>
+    </section>
+
+    <section id="contact" class="reveal">
+      <p class="section-label">// contact</p>
+      <h2 class="section-title">Let's work together</h2>
+      <div class="contact-panel">
+        <ul class="contact-list">
+          <li>
+            <div class="ci"><i data-lucide="mail"></i></div>
+            <div>
+              <div class="label">Email</div>
+              <a href="mailto:nehrasiddharth669@gmail.com">nehrasiddharth669@gmail.com</a>
+            </div>
+          </li>
+          <li>
+            <div class="ci"><i data-lucide="phone"></i></div>
+            <div>
+              <div class="label">Phone</div>
+              <a href="tel:+917986602424">+91 79866 02424</a>
+            </div>
+          </li>
+          <li>
+            <div class="ci"><i data-lucide="map-pin"></i></div>
+            <div>
+              <div class="label">Based in</div>
+              <span>India</span>
+            </div>
+          </li>
+        </ul>
+        <div class="contact-cta">
+          <h3>Have a project in mind?</h3>
+          <p>I'm open to freelance work, collaborations, and interesting conversations. Drop me a line — I typically respond within 24 hours.</p>
+          <a href="mailto:nehrasiddharth669@gmail.com" class="btn btn-primary">
+            <i data-lucide="send"></i>
+            Send an email
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 <strong>Siddharth Nehra</strong>. Crafted with care — all rights reserved.</p>
+  </footer>
+
+  <script>
+    const html = document.documentElement;
+    const themeToggle = document.getElementById('theme-toggle');
+    const menuBtn = document.getElementById('menu-btn');
+    const navLinks = document.getElementById('nav-links');
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      html.classList.add('light');
+    }
+
+    function updateThemeIcon() {
+      const isLight = html.classList.contains('light');
+      themeToggle.innerHTML = isLight
+        ? '<i data-lucide="moon"></i>'
+        : '<i data-lucide="sun"></i>';
+      lucide.createIcons();
+    }
+
+    themeToggle.addEventListener('click', () => {
+      html.classList.toggle('light');
+      localStorage.setItem('theme', html.classList.contains('light') ? 'light' : 'dark');
+      updateThemeIcon();
+    });
+
+    menuBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateThemeIcon();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

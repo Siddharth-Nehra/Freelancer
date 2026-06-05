@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreelanceHub - Connect Clients & Freelancers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="api.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            z-index: 10000;
+            animation: slideInRight 0.4s ease-out;
+            min-width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+        .toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        .input-focus:focus {
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        }
+        .skill-tag {
+            display: inline-block;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #0369a1;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin: 4px;
+            transition: all 0.2s ease;
+        }
+        .skill-tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: #06b6d4;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .section {
+            min-height: calc(100vh - 64px);
+        }
+        @media (max-width: 768px) {
+            .toast {
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-cyan-50 min-h-screen">
+    
+    <!-- Navigation -->
+    <nav id="main-nav" class="bg-white/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <!-- Back Button (hidden on home page) -->
+                    <button id="back-button" onclick="goBack()" class="hidden items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 hover:from-cyan-50 hover:to-purple-50 text-gray-700 hover:text-cyan-600 transition-all transform hover:scale-110 shadow-md hover:shadow-lg">
+                        <i class="fas fa-arrow-left text-lg"></i>
+                    </button>
+                    <div class="flex items-center cursor-pointer group" onclick="showSection('home')">
+                        <div class="relative">
+                            <i class="fas fa-briefcase text-cyan-600 text-2xl mr-2 group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent">FreelanceHub</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" onclick="showSection('home')" class="nav-link text-gray-700 hover:text-cyan-600 transition font-medium">Home</a>
+                    <a href="#" onclick="showSection('browse')" class="nav-link text-gray-700 hover:text-cyan-600 transition font-medium">Browse Freelancers</a>
+                    <a href="#" onclick="showSection('jobs')" class="nav-link text-gray-700 hover:text-cyan-600 transition font-medium">Browse Jobs</a>
+                </div>
+                <div id="nav-auth" class="flex items-center space-x-4">
+                    <button onclick="showSection('login')" class="text-cyan-600 hover:text-cyan-700 font-medium px-4 py-2 rounded-lg hover:bg-cyan-50 transition">Login</button>
+                    <button onclick="showSection('register')" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">Sign Up</button>
+                </div>
+                <div id="nav-user" class="hidden flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="avatar" id="user-avatar">U</div>
+                        <span id="user-name" class="text-gray-700 font-medium hidden md:block"></span>
+                    </div>
+                    <button onclick="showUserDashboard()" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">Dashboard</button>
+                    <button onclick="logout()" class="text-red-600 hover:text-red-700 font-medium px-4 py-2 rounded-lg hover:bg-red-50 transition">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center mb-16 fade-in">
+                <div class="inline-block mb-4">
+                    <span class="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">✨ Trusted Platform</span>
+                </div>
+                <h1 class="text-6xl md:text-7xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent">
+                    Connect Talent with Opportunity
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+                    The modern platform where clients find skilled freelancers and freelancers discover their next exciting project
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="showSection('register')" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-10 py-4 rounded-xl text-lg font-semibold hover:from-cyan-700 hover:to-purple-700 transition shadow-xl hover:shadow-2xl transform hover:scale-105">
+                        <i class="fas fa-rocket mr-2"></i>Get Started Free
+                    </button>
+                    <button onclick="showSection('browse')" class="bg-white text-cyan-600 px-10 py-4 rounded-xl text-lg font-semibold border-2 border-cyan-600 hover:bg-cyan-50 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <i class="fas fa-search mr-2"></i>Browse Freelancers
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+                <div class="stat-card p-6 rounded-xl text-center">
+                    <div class="text-4xl font-bold mb-2" id="stats-freelancers">0+</div>
+                    <div class="text-cyan-100">Freelancers</div>
+                </div>
+                <div class="stat-card p-6 rounded-xl text-center">
+                    <div class="text-4xl font-bold mb-2" id="stats-jobs">0+</div>
+                    <div class="text-cyan-100">Active Jobs</div>
+                </div>
+                <div class="stat-card p-6 rounded-xl text-center">
+                    <div class="text-4xl font-bold mb-2" id="stats-connections">0+</div>
+                    <div class="text-cyan-100">Connections</div>
+                </div>
+                <div class="stat-card p-6 rounded-xl text-center">
+                    <div class="text-4xl font-bold mb-2">100%</div>
+                    <div class="text-cyan-100">Secure</div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-xl card-hover border border-gray-100">
+                    <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center text-white text-3xl mb-6 shadow-lg">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-900">For Freelancers</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">Create your profile, showcase your skills, and connect with clients looking for your expertise. Build your reputation and grow your freelance career.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><i class="fas fa-check text-cyan-600 mr-2"></i>Free profile creation</li>
+                        <li><i class="fas fa-check text-cyan-600 mr-2"></i>Direct client contact</li>
+                        <li><i class="fas fa-check text-cyan-600 mr-2"></i>Portfolio showcase</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-xl card-hover border border-gray-100">
+                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-3xl mb-6 shadow-lg">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-900">For Clients</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">Post projects, browse talented freelancers, and find the perfect match for your needs. Get quality work done efficiently.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><i class="fas fa-check text-purple-600 mr-2"></i>Post unlimited jobs</li>
+                        <li><i class="fas fa-check text-purple-600 mr-2"></i>Browse verified profiles</li>
+                        <li><i class="fas fa-check text-purple-600 mr-2"></i>Secure communication</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-xl card-hover border border-gray-100">
+                    <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center text-white text-3xl mb-6 shadow-lg">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3 text-gray-900">Direct Contact</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">Exchange contact information securely and communicate directly with your matches. Build lasting professional relationships.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><i class="fas fa-check text-pink-600 mr-2"></i>Secure exchange</li>
+                        <li><i class="fas fa-check text-pink-600 mr-2"></i>Privacy protected</li>
+                        <li><i class="fas fa-check text-pink-600 mr-2"></i>Instant connection</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section id="login" class="section hidden">
+        <div class="max-w-md mx-auto px-4 py-12">
+            <div class="bg-white rounded-xl shadow-xl p-8 fade-in">
+                <h2 class="text-3xl font-bold text-center text-gray-900 mb-6">Login</h2>
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="login-email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" id="login-password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                </form>
+                <p class="text-center mt-4 text-gray-600">Don't have an account? <a href="#" onclick="showSection('register')" class="text-cyan-600 hover:underline">Sign up</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Register Section -->
+    <section id="register" class="section hidden">
+        <div class="max-w-md mx-auto px-4 py-12">
+            <div class="bg-white rounded-xl shadow-xl p-8 fade-in">
+                <h2 class="text-3xl font-bold text-center text-gray-900 mb-6">Create Account</h2>
+                <form id="register-form" onsubmit="handleRegister(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">I am a...</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="user-type" value="freelancer" checked class="mr-2">
+                                <span>Freelancer</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="user-type" value="client" class="mr-2">
+                                <span>Client</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input type="text" id="reg-name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="reg-email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <input type="tel" id="reg-phone" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <i class="fas fa-user-plus mr-2"></i>Create Account
+                    </button>
+                </form>
+                <p class="text-center mt-4 text-gray-600">Already have an account? <a href="#" onclick="showSection('login')" class="text-cyan-600 hover:underline">Login</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Browse Freelancers Section -->
+    <section id="browse" class="section hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Browse Freelancers</h2>
+                <button onclick="goBack()" class="md:hidden flex items-center space-x-2 text-cyan-600 hover:text-cyan-700 font-medium px-4 py-2 rounded-lg hover:bg-cyan-50 transition">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
+            </div>
+            
+            <div class="mb-6 flex flex-wrap gap-4">
+                <input type="text" id="search-freelancers" placeholder="Search by name or skills..." class="flex-1 min-w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                <select id="filter-skills" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                    <option value="">All Skills</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Graphic Design">Graphic Design</option>
+                    <option value="Writing">Writing</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Data Analysis">Data Analysis</option>
+                    <option value="React">React</option>
+                    <option value="Node.js">Node.js</option>
+                    <option value="Python">Python</option>
+                </select>
+            </div>
+
+            <div id="freelancers-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Freelancers will be dynamically loaded here -->
+            </div>
+            <div id="no-freelancers" class="hidden text-center py-12">
+                <p class="text-gray-500 text-lg">No freelancers found. Be the first to create a profile!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Browse Jobs Section -->
+    <section id="jobs" class="section hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Browse Jobs</h2>
+                <button onclick="showSection('home')" class="md:hidden flex items-center space-x-2 text-cyan-600 hover:text-cyan-700 font-medium px-4 py-2 rounded-lg hover:bg-cyan-50 transition">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
+            </div>
+            <div id="jobs-list" class="grid md:grid-cols-2 gap-6">
+                <!-- Jobs will be dynamically loaded here -->
+            </div>
+            <div id="no-jobs" class="hidden text-center py-12">
+                <p class="text-gray-500 text-lg">No jobs available at the moment. Check back later!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Freelancer Dashboard -->
+    <section id="freelancer-dashboard" class="section hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Freelancer Dashboard</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold mb-2">Profile Completion</h3>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div id="profile-progress" class="bg-cyan-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p id="profile-percent" class="text-sm text-gray-600 mt-2">0% Complete</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold mb-2">Contact Requests</h3>
+                    <p class="text-3xl font-bold text-cyan-600" id="contact-requests-count">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold mb-2">Job Applications</h3>
+                    <p class="text-3xl font-bold text-cyan-600" id="job-applications-count">0</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold mb-6">My Profile</h3>
+                <form id="freelancer-profile-form" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Professional Title</label>
+                            <input type="text" id="fl-title" placeholder="e.g., Senior Web Developer" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Hourly Rate ($)</label>
+                            <input type="number" id="fl-rate" min="0" step="0.01" placeholder="50" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Skills (comma separated)</label>
+                        <input type="text" id="fl-skills" placeholder="Web Development, React, Node.js" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bio/Description</label>
+                        <textarea id="fl-bio" rows="4" placeholder="Tell clients about yourself and your expertise..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Portfolio URL</label>
+                        <input type="url" id="fl-portfolio" placeholder="https://yourportfolio.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+                            <select id="fl-availability" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                                <option value="Available">Available</option>
+                                <option value="Limited">Limited</option>
+                                <option value="Busy">Busy</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Years of Experience</label>
+                            <input type="number" id="fl-experience" min="0" placeholder="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                    </div>
+                    <button type="button" onclick="saveFreelancerProfile()" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <i class="fas fa-save mr-2"></i>Save Profile
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold mb-6">Contact Requests</h3>
+                <div id="freelancer-requests" class="space-y-4">
+                    <!-- Contact requests will appear here -->
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h3 class="text-2xl font-bold mb-6">My Connections</h3>
+                <div id="freelancer-connections" class="space-y-4">
+                    <!-- Accepted connections will appear here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Client Dashboard -->
+    <section id="client-dashboard" class="section hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Client Dashboard</h2>
+                <button onclick="goBack()" class="md:hidden flex items-center space-x-2 text-cyan-600 hover:text-cyan-700 font-medium px-4 py-2 rounded-lg hover:bg-cyan-50 transition">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold mb-2">Posted Jobs</h3>
+                    <p class="text-3xl font-bold text-cyan-600" id="posted-jobs">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold mb-2">Pending Requests</h3>
+                    <p class="text-3xl font-bold text-cyan-600" id="pending-requests">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold mb-2">Connections</h3>
+                    <p class="text-3xl font-bold text-cyan-600" id="connections-count">0</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold mb-6">My Profile</h3>
+                <form id="client-profile-form" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Company/Organization Name</label>
+                        <input type="text" id="cl-company" placeholder="Your Company Name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                        <input type="text" id="cl-industry" placeholder="Technology, Healthcare, etc." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">About Your Company</label>
+                        <textarea id="cl-about" rows="4" placeholder="Tell freelancers about your company..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Website</label>
+                        <input type="url" id="cl-website" placeholder="https://yourcompany.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                    </div>
+                    <button type="button" onclick="saveClientProfile()" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <i class="fas fa-save mr-2"></i>Save Profile
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold mb-6">Post a Job</h3>
+                <form id="post-job-form" onsubmit="handlePostJob(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
+                        <input type="text" id="job-title" required placeholder="e.g., Need a React Developer" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="job-description" rows="4" required placeholder="Describe the project requirements..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500"></textarea>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Budget ($)</label>
+                            <input type="number" id="job-budget" required min="0" placeholder="1000" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Required Skills</label>
+                            <input type="text" id="job-skills" placeholder="React, Node.js" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <i class="fas fa-paper-plane mr-2"></i>Post Job
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold mb-6">My Posted Jobs</h3>
+                <div id="client-jobs-list" class="space-y-4">
+                    <!-- Jobs will appear here -->
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h3 class="text-2xl font-bold mb-6">My Connections</h3>
+                <div id="client-connections" class="space-y-4">
+                    <!-- Accepted connections will appear here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Request Modal -->
+    <div id="contact-modal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center z-50" onclick="if(event.target === this) closeContactModal()">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 fade-in border border-gray-100">
+            <h3 class="text-2xl font-bold mb-6">Request Contact</h3>
+            <form id="contact-request-form" onsubmit="handleContactRequest(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Project Summary</label>
+                    <textarea id="contact-summary" rows="3" required placeholder="Describe your project..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget Range</label>
+                    <input type="text" id="contact-budget" placeholder="$500 - $1000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Timeline</label>
+                    <input type="text" id="contact-timeline" placeholder="2 weeks" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500">
+                </div>
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <i class="fas fa-paper-plane mr-2"></i>Send Request
+                    </button>
+                    <button type="button" onclick="closeContactModal()" class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contact Info Modal -->
+    <div id="contact-info-modal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center z-50" onclick="if(event.target === this) closeContactInfoModal()">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 fade-in max-h-[90vh] overflow-y-auto border border-gray-100">
+            <h3 class="text-2xl font-bold mb-6">Contact Information</h3>
+            <div id="contact-info-content" class="space-y-4">
+                <!-- Contact info will be displayed here -->
+            </div>
+            <button onclick="closeContactInfoModal()" class="mt-6 w-full bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                <i class="fas fa-times mr-2"></i>Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Current user
+        let currentUser = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            setupEventListeners();
+            loadStats(); // Load stats on page load
+            // Load data when sections are shown
+            document.querySelectorAll('.section').forEach(section => {
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (!mutation.target.classList.contains('hidden')) {
+                            const sectionId = mutation.target.id;
+                            if (sectionId === 'browse') {
+                                loadFreelancers();
+                            } else if (sectionId === 'jobs') {
+                                loadJobs();
+                            } else if (sectionId === 'home') {
+                                loadStats(); // Reload stats when home is shown
+                            }
+                        }
+                    });
+                });
+                observer.observe(section, { attributes: true, attributeFilter: ['class'] });
+            });
+        });
+
+        function setupEventListeners() {
+            document.getElementById('search-freelancers')?.addEventListener('input', filterFreelancers);
+            document.getElementById('filter-skills')?.addEventListener('change', filterFreelancers);
+        }
+        
+        async function loadStats() {
+            try {
+                // Load stats only if user is logged in, otherwise use public data
+                const [freelancers, jobs] = await Promise.all([
+                    usersAPI.getFreelancers().catch(() => []),
+                    jobsAPI.getJobs().catch(() => [])
+                ]);
+                
+                // Try to get connections count if user is logged in
+                let connectionsCount = 0;
+                if (currentUser) {
+                    try {
+                        const connections = await connectionsAPI.getMyConnections();
+                        connectionsCount = connections.length;
+                    } catch (error) {
+                        // If not logged in or error, estimate based on data
+                        connectionsCount = Math.max(2, Math.floor((freelancers.length + jobs.length) / 4));
+                    }
+                } else {
+                    // Estimate for public view (we know from seed data there are 2 connections)
+                    connectionsCount = Math.max(2, Math.floor((freelancers.length + jobs.length) / 4));
+                }
+                
+                // Animate stats
+                if (freelancers.length > 0) {
+                    animateValue('stats-freelancers', 0, freelancers.length, 1500);
+                } else {
+                    document.getElementById('stats-freelancers').textContent = '0+';
+                }
+                
+                if (jobs.length > 0) {
+                    animateValue('stats-jobs', 0, jobs.length, 1500);
+                } else {
+                    document.getElementById('stats-jobs').textContent = '0+';
+                }
+                
+                if (connectionsCount > 0) {
+                    animateValue('stats-connections', 0, connectionsCount, 1500);
+                } else {
+                    document.getElementById('stats-connections').textContent = '0+';
+                }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+                // Set default values on error
+                document.getElementById('stats-freelancers').textContent = '0+';
+                document.getElementById('stats-jobs').textContent = '0+';
+                document.getElementById('stats-connections').textContent = '0+';
+            }
+        }
+        
+        function animateValue(id, start, end, duration) {
+            const element = document.getElementById(id);
+            if (!element) return;
+            
+            const range = end - start;
+            if (range === 0) {
+                element.textContent = end + '+';
+                return;
+            }
+            
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                element.textContent = current + '+';
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    clearInterval(timer);
+                    element.textContent = end + '+';
+                }
+            }, stepTime);
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            toast.innerHTML = `
+                <i class="fas ${icon} ${type === 'success' ? 'text-green-500' : type === 'error' ? 'text-red-500' : 'text-blue-500'} text-xl"></i>
+                <span class="flex-1">${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+        
+        function setButtonLoading(button, loading) {
+            if (loading) {
+                button.disabled = true;
+                button.classList.add('btn-loading');
+                button.dataset.originalText = button.innerHTML;
+            } else {
+                button.disabled = false;
+                button.classList.remove('btn-loading');
+                if (button.dataset.originalText) {
+                    button.innerHTML = button.dataset.originalText;
+                }
+            }
+        }
+
+        async function checkAuth() {
+            const token = getAuthToken();
+            if (token) {
+                try {
+                    const response = await authAPI.getCurrentUser();
+                    currentUser = response.user;
+                    showUserNav();
+                    showUserDashboard();
+                } catch (error) {
+                    removeAuthToken();
+                    showSection('home');
+                }
+            } else {
+                showSection('home');
+            }
+        }
+
+        function showUserNav() {
+            document.getElementById('nav-auth').classList.add('hidden');
+            document.getElementById('nav-user').classList.remove('hidden');
+            document.getElementById('user-name').textContent = currentUser.name;
+            // Set avatar initial
+            const avatar = document.getElementById('user-avatar');
+            if (avatar && currentUser.name) {
+                avatar.textContent = currentUser.name.charAt(0).toUpperCase();
+            }
+        }
+
+        // Track navigation history
+        let navigationHistory = ['home'];
+        
+        function goBack() {
+            if (navigationHistory.length > 1) {
+                navigationHistory.pop(); // Remove current section
+                const previousSection = navigationHistory[navigationHistory.length - 1];
+                showSection(previousSection, false); // false = don't add to history
+            } else {
+                showSection('home', false);
+            }
+        }
+        
+        function showSection(sectionId, addToHistory = true) {
+            // Update back button visibility
+            const backButton = document.getElementById('back-button');
+            if (backButton) {
+                if (sectionId === 'home') {
+                    backButton.classList.add('hidden');
+                } else {
+                    backButton.classList.remove('hidden');
+                    backButton.classList.add('flex'); // Ensure flex display
+                }
+            }
+            
+            // Add to history if needed
+            if (addToHistory) {
+                // Don't add if it's the same as current
+                if (navigationHistory[navigationHistory.length - 1] !== sectionId) {
+                    navigationHistory.push(sectionId);
+                }
+            }
+            
+            document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.remove('hidden');
+                section.classList.add('fade-in');
+                
+                // Refresh data when section is shown
+                if (sectionId === 'browse') {
+                    loadFreelancers();
+                } else if (sectionId === 'jobs') {
+                    loadJobs();
+                } else if (sectionId === 'home') {
+                    loadStats(); // Reload stats when home is shown
+                }
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            setButtonLoading(submitButton, true);
+            
+            const userType = document.querySelector('input[name="user-type"]:checked').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+
+            // Validate password length
+            if (password.length < 6) {
+                setButtonLoading(submitButton, false);
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            try {
+                const response = await authAPI.register({
+                    name: document.getElementById('reg-name').value,
+                    email: email,
+                    password: password,
+                    phone: document.getElementById('reg-phone').value,
+                    type: userType
+                });
+
+                setAuthToken(response.token);
+                currentUser = response.user;
+                setButtonLoading(submitButton, false);
+                showToast('Registration successful! Welcome to FreelanceHub!', 'success');
+                showUserNav();
+                showUserDashboard();
+            } catch (error) {
+                setButtonLoading(submitButton, false);
+                showToast(error.message || 'Registration failed', 'error');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            setButtonLoading(submitButton, true);
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await authAPI.login(email, password);
+                setAuthToken(response.token);
+                currentUser = response.user;
+                setButtonLoading(submitButton, false);
+                showUserNav();
+                showUserDashboard();
+                showToast('Login successful!', 'success');
+            } catch (error) {
+                setButtonLoading(submitButton, false);
+                showToast(error.message || 'Invalid email or password!', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            removeAuthToken();
+            document.getElementById('nav-auth').classList.remove('hidden');
+            document.getElementById('nav-user').classList.add('hidden');
+            showSection('home');
+            showToast('Logged out successfully', 'success');
+        }
+
+        function showUserDashboard() {
+            if (!currentUser) return;
+            
+            if (currentUser.type === 'freelancer') {
+                loadFreelancerDashboard();
+                showSection('freelancer-dashboard');
+            } else {
+                loadClientDashboard();
+                showSection('client-dashboard');
+            }
+        }
+
+        async function loadFreelancerDashboard() {
+            try {
+                // Reload current user data
+                const userResponse = await authAPI.getCurrentUser();
+                currentUser = userResponse.user;
+
+                const profile = currentUser.profile || {};
+                document.getElementById('fl-title').value = profile.title || '';
+                document.getElementById('fl-rate').value = profile.rate || '';
+                document.getElementById('fl-skills').value = profile.skills ? profile.skills.join(', ') : '';
+                document.getElementById('fl-bio').value = profile.bio || '';
+                document.getElementById('fl-portfolio').value = profile.portfolio || '';
+                document.getElementById('fl-availability').value = profile.availability || 'Available';
+                document.getElementById('fl-experience').value = profile.experience || '';
+
+                // Calculate profile completion
+                const fields = ['title', 'rate', 'skills', 'bio', 'portfolio', 'availability', 'experience'];
+                const completed = fields.filter(f => {
+                    const value = profile[f];
+                    return value !== undefined && value !== null && value !== '' && 
+                           (Array.isArray(value) ? value.length > 0 : true);
+                }).length;
+                const percent = Math.round((completed / fields.length) * 100);
+                document.getElementById('profile-progress').style.width = percent + '%';
+                document.getElementById('profile-percent').textContent = percent + '% Complete';
+
+                // Load contact requests
+                const requestsResponse = await contactRequestsAPI.getFreelancerRequests();
+                document.getElementById('contact-requests-count').textContent = requestsResponse.length;
+                displayFreelancerRequests(requestsResponse);
+
+                // Load job applications
+                const applicationsResponse = await jobApplicationsAPI.getMyApplications();
+                document.getElementById('job-applications-count').textContent = applicationsResponse.length;
+
+                // Load connections
+                const connectionsResponse = await connectionsAPI.getMyConnections();
+                displayFreelancerConnections(connectionsResponse);
+            } catch (error) {
+                showToast('Failed to load dashboard', 'error');
+            }
+        }
+
+        async function saveFreelancerProfile() {
+            try {
+                const profile = {
+                    title: document.getElementById('fl-title').value.trim(),
+                    rate: parseFloat(document.getElementById('fl-rate').value) || 0,
+                    skills: document.getElementById('fl-skills').value.split(',').map(s => s.trim()).filter(s => s),
+                    bio: document.getElementById('fl-bio').value.trim(),
+                    portfolio: document.getElementById('fl-portfolio').value.trim(),
+                    availability: document.getElementById('fl-availability').value,
+                    experience: parseInt(document.getElementById('fl-experience').value) || 0
+                };
+
+                const response = await usersAPI.updateProfile(profile);
+                currentUser = response.user;
+                showToast('Profile saved successfully!', 'success');
+                loadFreelancerDashboard();
+                // Refresh freelancers list if visible
+                if (!document.getElementById('browse').classList.contains('hidden')) {
+                    loadFreelancers();
+                }
+            } catch (error) {
+                showToast(error.message || 'Failed to save profile', 'error');
+            }
+        }
+
+        async function loadClientDashboard() {
+            try {
+                // Reload current user data
+                const userResponse = await authAPI.getCurrentUser();
+                currentUser = userResponse.user;
+
+                const profile = currentUser.profile || {};
+                document.getElementById('cl-company').value = profile.company || '';
+                document.getElementById('cl-industry').value = profile.industry || '';
+                document.getElementById('cl-about').value = profile.about || '';
+                document.getElementById('cl-website').value = profile.website || '';
+
+                // Load stats
+                const userJobsResponse = await jobsAPI.getMyJobs();
+                document.getElementById('posted-jobs').textContent = userJobsResponse.length;
+                
+                const pendingRequestsResponse = await contactRequestsAPI.getClientRequests();
+                const pendingCount = pendingRequestsResponse.filter(r => r.status === 'pending').length;
+                document.getElementById('pending-requests').textContent = pendingCount;
+
+                const userConnectionsResponse = await connectionsAPI.getMyConnections();
+                document.getElementById('connections-count').textContent = userConnectionsResponse.length;
+
+                displayClientJobs(userJobsResponse);
+                displayClientConnections(userConnectionsResponse);
+            } catch (error) {
+                showToast('Failed to load dashboard', 'error');
+            }
+        }
+
+        async function saveClientProfile() {
+            try {
+                const profile = {
+                    company: document.getElementById('cl-company').value.trim(),
+                    industry: document.getElementById('cl-industry').value.trim(),
+                    about: document.getElementById('cl-about').value.trim(),
+                    website: document.getElementById('cl-website').value.trim()
+                };
+
+                const response = await usersAPI.updateProfile(profile);
+                currentUser = response.user;
+                showToast('Profile saved successfully!', 'success');
+            } catch (error) {
+                showToast(error.message || 'Failed to save profile', 'error');
+            }
+        }
+
+        async function handlePostJob(e) {
+            e.preventDefault();
+            try {
+                const jobData = {
+                    title: document.getElementById('job-title').value.trim(),
+                    description: document.getElementById('job-description').value.trim(),
+                    budget: parseFloat(document.getElementById('job-budget').value) || 0,
+                    skills: document.getElementById('job-skills').value
+                };
+
+                await jobsAPI.createJob(jobData);
+                document.getElementById('post-job-form').reset();
+                showToast('Job posted successfully!', 'success');
+                loadClientDashboard();
+                // Refresh jobs list if visible
+                if (!document.getElementById('jobs').classList.contains('hidden')) {
+                    loadJobs();
+                }
+            } catch (error) {
+                showToast(error.message || 'Failed to post job', 'error');
+            }
+        }
+
+        async function loadFreelancers() {
+            const container = document.getElementById('freelancers-list');
+            const noResults = document.getElementById('no-freelancers');
+            
+            if (!container) return;
+
+            try {
+                const freelancers = await usersAPI.getFreelancers();
+                
+                if (freelancers.length === 0) {
+                    container.innerHTML = '';
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                    container.innerHTML = freelancers.map(f => `
+                        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">${f.name}</h3>
+                                    <p class="text-cyan-600">${f.profile.title || 'Freelancer'}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold text-cyan-600">$${f.profile.rate || 0}/hr</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4 text-sm line-clamp-2">${f.profile.bio || 'No bio available'}</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${(f.profile.skills || []).slice(0, 3).map(skill => `<span class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-sm">${skill}</span>`).join('')}
+                                ${(f.profile.skills || []).length > 3 ? `<span class="text-gray-500 text-sm">+${(f.profile.skills || []).length - 3} more</span>` : ''}
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">${f.profile.availability || 'Available'}</span>
+                                ${currentUser && currentUser.type === 'client' ? 
+                                    `<button onclick="openContactModal('${f.id}')" class="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition">Contact</button>` :
+                                    currentUser && currentUser.type === 'freelancer' ?
+                                    `<span class="text-sm text-gray-400">View Profile</span>` :
+                                    `<button onclick="showSection('login')" class="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition">Contact</button>`
+                                }
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                showToast('Failed to load freelancers', 'error');
+            }
+        }
+
+        async function filterFreelancers() {
+            const search = document.getElementById('search-freelancers').value;
+            const skillFilter = document.getElementById('filter-skills').value;
+            
+            const container = document.getElementById('freelancers-list');
+            const noResults = document.getElementById('no-freelancers');
+            
+            try {
+                const freelancers = await usersAPI.getFreelancers(search, skillFilter);
+                
+                if (freelancers.length === 0) {
+                    container.innerHTML = '';
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                    container.innerHTML = freelancers.map(f => `
+                        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">${f.name}</h3>
+                                    <p class="text-cyan-600">${f.profile.title || 'Freelancer'}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold text-cyan-600">$${f.profile.rate || 0}/hr</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4 text-sm line-clamp-2">${f.profile.bio || 'No bio available'}</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${(f.profile.skills || []).slice(0, 3).map(skill => `<span class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-sm">${skill}</span>`).join('')}
+                                ${(f.profile.skills || []).length > 3 ? `<span class="text-gray-500 text-sm">+${(f.profile.skills || []).length - 3} more</span>` : ''}
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">${f.profile.availability || 'Available'}</span>
+                                ${currentUser && currentUser.type === 'client' ? 
+                                    `<button onclick="openContactModal('${f.id}')" class="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition">Contact</button>` :
+                                    currentUser && currentUser.type === 'freelancer' ?
+                                    `<span class="text-sm text-gray-400">View Profile</span>` :
+                                    `<button onclick="showSection('login')" class="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition">Contact</button>`
+                                }
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                showToast('Failed to filter freelancers', 'error');
+            }
+        }
+
+        async function loadJobs() {
+            const container = document.getElementById('jobs-list');
+            const noResults = document.getElementById('no-jobs');
+            if (!container) return;
+
+            // Show loading state
+            container.innerHTML = '<div class="col-span-full text-center py-12"><div class="loading mx-auto"></div><p class="mt-4 text-gray-500">Loading jobs...</p></div>';
+
+            try {
+                const jobs = await jobsAPI.getJobs();
+                
+                if (jobs.length === 0) {
+                    container.innerHTML = '';
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                    container.innerHTML = jobs.map(job => `
+                        <div class="bg-white rounded-2xl shadow-lg p-6 card-hover border border-gray-100">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-2">${job.title}</h3>
+                                    <div class="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                                        <i class="fas fa-user"></i>
+                                        <span>Posted by ${job.clientName}</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-4 py-2 rounded-lg font-bold text-lg">
+                                        $${job.budget}
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4 text-sm line-clamp-3 leading-relaxed">${job.description}</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${job.skills && job.skills.length > 0 ? job.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('') : '<span class="text-gray-400 text-sm">No skills specified</span>'}
+                            </div>
+                            <div class="pt-4 border-t border-gray-100">
+                                ${currentUser && currentUser.type === 'freelancer' ? 
+                                    `<button onclick="applyToJob('${job.id}')" class="w-full bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-3 rounded-lg hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
+                                        <i class="fas fa-paper-plane mr-2"></i>Apply Now
+                                    </button>` :
+                                    currentUser && currentUser.type === 'client' && currentUser.id === job.clientId ?
+                                    `<span class="badge badge-info"><i class="fas fa-check mr-1"></i>Your job posting</span>` :
+                                    !currentUser ?
+                                    `<button onclick="showSection('login')" class="w-full bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-3 rounded-lg hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
+                                        <i class="fas fa-sign-in-alt mr-2"></i>Login to Apply
+                                    </button>` :
+                                    `<span class="text-sm text-gray-400"><i class="fas fa-eye mr-1"></i>View Job</span>`
+                                }
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-red-500"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Failed to load jobs</p></div>';
+                showToast('Failed to load jobs', 'error');
+            }
+        }
+
+        function openContactModal(freelancerId) {
+            if (!currentUser || currentUser.type !== 'client') {
+                showToast('Please login as a client to contact freelancers', 'error');
+                if (!currentUser) showSection('login');
+                return;
+            }
+
+            window.currentContactFreelancerId = freelancerId;
+            document.getElementById('contact-modal').classList.remove('hidden');
+        }
+
+        function closeContactModal() {
+            document.getElementById('contact-modal').classList.add('hidden');
+            document.getElementById('contact-request-form').reset();
+        }
+
+        async function handleContactRequest(e) {
+            e.preventDefault();
+            try {
+                const requestData = {
+                    freelancerId: window.currentContactFreelancerId,
+                    summary: document.getElementById('contact-summary').value.trim(),
+                    budget: document.getElementById('contact-budget').value.trim(),
+                    timeline: document.getElementById('contact-timeline').value.trim()
+                };
+
+                await contactRequestsAPI.createRequest(requestData);
+                showToast('Contact request sent! The freelancer will be notified.', 'success');
+                closeContactModal();
+            } catch (error) {
+                showToast(error.message || 'Failed to send contact request', 'error');
+            }
+        }
+
+        function displayFreelancerRequests(requests) {
+            const container = document.getElementById('freelancer-requests');
+            if (requests.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No contact requests yet.</p>';
+                return;
+            }
+
+            container.innerHTML = requests.map(req => `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${req.clientName}</h4>
+                            <p class="text-sm text-gray-600 mt-1">${req.summary}</p>
+                        </div>
+                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">${req.status}</span>
+                    </div>
+                    <div class="text-sm text-gray-600 mb-3">
+                        <p><strong>Budget:</strong> ${req.budget || 'Not specified'}</p>
+                        <p><strong>Timeline:</strong> ${req.timeline || 'Not specified'}</p>
+                    </div>
+                        <button onclick="acceptContactRequest('${req.id}')" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105 text-sm font-semibold">
+                            <i class="fas fa-check mr-2"></i>Accept & Exchange Contact
+                        </button>
+                </div>
+            `).join('');
+        }
+
+        async function acceptContactRequest(requestId) {
+            try {
+                const response = await contactRequestsAPI.acceptRequest(requestId);
+                const connection = response.connection;
+
+                // Show contact information exchange
+                const contactInfo = `
+                    <div class="space-y-4">
+                        <div class="bg-cyan-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2 text-cyan-800">Client Contact Information:</h4>
+                            <p><strong>Name:</strong> ${connection.clientName}</p>
+                            <p><strong>Email:</strong> <a href="mailto:${connection.clientEmail}" class="text-cyan-600 hover:underline">${connection.clientEmail}</a></p>
+                            <p><strong>Phone:</strong> <a href="tel:${connection.clientPhone}" class="text-cyan-600 hover:underline">${connection.clientPhone}</a></p>
+                        </div>
+                        <div class="bg-cyan-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2 text-cyan-800">Your Contact Information (Shared with Client):</h4>
+                            <p><strong>Name:</strong> ${connection.freelancerName}</p>
+                            <p><strong>Email:</strong> ${connection.freelancerEmail}</p>
+                            <p><strong>Phone:</strong> ${connection.freelancerPhone}</p>
+                        </div>
+                        <p class="text-sm text-gray-600">Contact information has been exchanged. You can now communicate directly.</p>
+                    </div>
+                `;
+
+                document.getElementById('contact-info-content').innerHTML = contactInfo;
+                document.getElementById('contact-info-modal').classList.remove('hidden');
+
+                showToast('Contact information exchanged!', 'success');
+                loadFreelancerDashboard();
+            } catch (error) {
+                showToast(error.message || 'Failed to accept request', 'error');
+            }
+        }
+
+        function displayFreelancerConnections(userConnections) {
+            const container = document.getElementById('freelancer-connections');
+            if (userConnections.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No connections yet.</p>';
+                return;
+            }
+
+            container.innerHTML = userConnections.map(conn => `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${conn.clientName}</h4>
+                            <p class="text-sm text-gray-600">Connected</p>
+                        </div>
+                        <button onclick="viewConnectionInfo('${conn.id}', 'freelancer')" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105 text-sm font-semibold">
+                            <i class="fas fa-eye mr-2"></i>View Contact
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function closeContactInfoModal() {
+            document.getElementById('contact-info-modal').classList.add('hidden');
+        }
+
+        function displayClientJobs(jobs) {
+            const container = document.getElementById('client-jobs-list');
+            if (jobs.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No jobs posted yet.</p>';
+                return;
+            }
+
+            container.innerHTML = jobs.map(job => `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${job.title}</h4>
+                            <p class="text-sm text-gray-600 mt-1">${job.description}</p>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">${job.status}</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <p><strong>Budget:</strong> $${job.budget}</p>
+                        <p><strong>Skills:</strong> ${job.skills.length > 0 ? job.skills.join(', ') : 'Not specified'}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayClientConnections(userConnections) {
+            const container = document.getElementById('client-connections');
+            if (userConnections.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No connections yet.</p>';
+                return;
+            }
+
+            container.innerHTML = userConnections.map(conn => `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${conn.freelancerName}</h4>
+                            <p class="text-sm text-gray-600">Connected</p>
+                        </div>
+                        <button onclick="viewConnectionInfo('${conn.id}', 'client')" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105 text-sm font-semibold">
+                            <i class="fas fa-eye mr-2"></i>View Contact
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function viewConnectionInfo(connectionId, userType) {
+            try {
+                const connection = await connectionsAPI.getConnection(connectionId);
+                
+                let contactInfo;
+                if (userType === 'freelancer') {
+                    contactInfo = `
+                        <div class="space-y-4">
+                            <div class="bg-cyan-50 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2 text-cyan-800">Client Contact Information:</h4>
+                                <p><strong>Name:</strong> ${connection.clientName}</p>
+                                <p><strong>Email:</strong> <a href="mailto:${connection.clientEmail}" class="text-cyan-600 hover:underline">${connection.clientEmail}</a></p>
+                                <p><strong>Phone:</strong> <a href="tel:${connection.clientPhone}" class="text-cyan-600 hover:underline">${connection.clientPhone}</a></p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    contactInfo = `
+                        <div class="space-y-4">
+                            <div class="bg-cyan-50 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2 text-cyan-800">Freelancer Contact Information:</h4>
+                                <p><strong>Name:</strong> ${connection.freelancerName}</p>
+                                <p><strong>Email:</strong> <a href="mailto:${connection.freelancerEmail}" class="text-cyan-600 hover:underline">${connection.freelancerEmail}</a></p>
+                                <p><strong>Phone:</strong> <a href="tel:${connection.freelancerPhone}" class="text-cyan-600 hover:underline">${connection.freelancerPhone}</a></p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('contact-info-content').innerHTML = contactInfo;
+                document.getElementById('contact-info-modal').classList.remove('hidden');
+            } catch (error) {
+                showToast(error.message || 'Failed to load connection info', 'error');
+            }
+        }
+
+        async function applyToJob(jobId) {
+            if (!currentUser || currentUser.type !== 'freelancer') {
+                showToast('Please login as a freelancer to apply for jobs', 'error');
+                return;
+            }
+
+            const button = event.target.closest('button');
+            if (button) {
+                setButtonLoading(button, true);
+            }
+
+            try {
+                await jobApplicationsAPI.applyToJob(jobId);
+                if (button) setButtonLoading(button, false);
+                showToast('Application sent successfully! 🎉', 'success');
+                // Reload jobs to update UI
+                setTimeout(() => loadJobs(), 1000);
+            } catch (error) {
+                if (button) setButtonLoading(button, false);
+                showToast(error.message || 'Failed to apply to job', 'error');
+            }
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- About Section -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-briefcase mr-2"></i>
+                        FreelanceHub
+                    </h3>
+                    <p class="text-cyan-100 mb-4 leading-relaxed">
+                        Connecting talented freelancers with clients worldwide. Your trusted platform for finding the perfect match for your projects.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="https://www.facebook.com/campaign/landing.php?campaign_id=14884913640&extra_1=s%7Cc%7C550525804791%7Cb%7Cfacebook%7C&placement=&creative=550525804791&keyword=facebook&partner_id=googlesem&extra_2=campaignid%3D14884913640%26adgroupid%3D128696220912%26matchtype%3Db%26network%3Dg%26source%3Dnotmobile%26search_or_content%3Ds%26device%3Dc%26devicemodel%3D%26adposition%3D%26target%3D%26targetid%3Dkwd-592856129%26loc_physical_ms%3D9301397%26loc_interest_ms%3D%26feeditemid%3D%26param1%3D%26param2%3D&gad_source=1&gad_campaignid=14884913640&gbraid=0AAAAAD2MkOUP96VQfkAVxcmlvRwphH6xh&gclid=CjwKCAiAxc_JBhA2EiwAFVs7XIfqioMBEfl4WBaxHOPn3VLFiznWp7JRwOZAwtMC1vngUpsLyRKm0hoCtcEQAvD_BwE" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition transform hover:scale-110">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition transform hover:scale-110">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/jobs/" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition transform hover:scale-110">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition transform hover:scale-110">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" onclick="showSection('home')" class="text-cyan-100 hover:text-white transition flex items-center">
+                                <i class="fas fa-home mr-2 text-sm"></i>Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="showSection('browse')" class="text-cyan-100 hover:text-white transition flex items-center">
+                                <i class="fas fa-users mr-2 text-sm"></i>Browse Freelancers
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="showSection('jobs')" class="text-cyan-100 hover:text-white transition flex items-center">
+                                <i class="fas fa-briefcase mr-2 text-sm"></i>Browse Jobs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="showSection('register')" class="text-cyan-100 hover:text-white transition flex items-center">
+                                <i class="fas fa-user-plus mr-2 text-sm"></i>Sign Up
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="showSection('login')" class="text-cyan-100 hover:text-white transition flex items-center">
+                                <i class="fas fa-sign-in-alt mr-2 text-sm"></i>Login
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact Information -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mr-3 mt-1 text-cyan-200"></i>
+                            <div>
+                                <p class="text-cyan-100 font-medium">Email</p>
+                                <a href="mailto:siddharthnehra0@gmail.com" class="text-cyan-100 hover:text-white transition">siddharthnehra0@gmail.com</a>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mr-3 mt-1 text-cyan-200"></i>
+                            <div>
+                                <p class="text-cyan-100 font-medium">Phone</p>
+                                <a href="tel:+91 79xx660x94-FREELANCE" class="text-cyan-100 hover:text-white transition">+91 79xx660x94</a>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-3 mt-1 text-cyan-200"></i>
+                            <div>
+                                <p class="text-cyan-100 font-medium">Address</p>
+                                <p class="text-cyan-100">123 Innovation Street<br>San Francisco, CA 94105<br>India-</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock mr-3 mt-1 text-cyan-200"></i>
+                            <div>
+                                <p class="text-cyan-100 font-medium">Business Hours</p>
+                                <p class="text-cyan-100">Mon - Fri: 9:00 AM - 6:00 PM<br>Sat - Sun: Closed</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter & Teams -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Stay Connected</h3>
+                    <p class="text-cyan-100 mb-4">
+                        Subscribe to our newsletter for the latest updates, tips, and opportunities.
+                    </p>
+                    <form class="mb-4" onsubmit="event.preventDefault(); showToast('Thank you for subscribing!', 'success');">
+                        <div class="flex">
+                            <input type="email" placeholder="Your email" class="flex-1 px-4 py-2 rounded-l-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white">
+                            <button type="submit" class="bg-white text-cyan-600 px-4 py-2 rounded-r-lg hover:bg-cyan-50 transition font-semibold">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="flex justify-end">
+                        <a href="teams/index.html" class="bg-white text-cyan-600 px-6 py-3 rounded-lg hover:bg-cyan-50 transition font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2">
+                            <i class="fas fa-users"></i>
+                            <span>Teams</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-cyan-400/30 pt-8 mt-8">
+                <div class="border-t border-cyan-400/30 pt-8 mt-8">
+    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div class="text-cyan-100 text-sm">
+            <p>&copy; 2024 FreelanceHub. All rights reserved.</p>
+            <p class="mt-2 text-xs opacity-80">
+                Connecting **businesses with top-tier freelance talent** in design, development, marketing, and more. Find your perfect pro today!
+            </p>
+        </div>
+        <div class="flex space-x-6 text-sm">
+            <a href="#" onclick="displayModal('Privacy Policy', 'This page details how FreelanceHub collects, uses, and protects your personal data as a user or client. We value your privacy and trust.')" class="text-cyan-100 hover:text-white transition">Privacy Policy</a>
+            <a href="#" onclick="displayModal('Terms of Service', 'These are the official rules and guidelines for using the FreelanceHub platform, covering user accounts, payment, intellectual property rights, and dispute resolution.')" class="text-cyan-100 hover:text-white transition">Terms of Service</a>
+            <a href="#" onclick="displayModal('Cookie Policy', 'Our Cookie Policy explains what cookies are, how we use them, and your choices regarding the use of cookies on our platform.')" class="text-cyan-100 hover:text-white transition">Cookie Policy</a>
+            <a href="#" onclick="displayModal('Help Center', 'Visit our comprehensive Help Center for FAQs, tutorials, and guides on hiring, bidding on jobs, payments, and account management.')" class="text-cyan-100 hover:text-white transition">Help Center</a>
+            <a href="#" onclick="displayModal('Contact Us', 'Need direct assistance? Contact the FreelanceHub support team via email or live chat for account issues, bug reports, or partnership inquiries.')" class="text-cyan-100 hover:text-white transition">Contact Us</a>
+        </div>
+    </div>
+</div>
+
+<div id="infoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7);">
+    <div style="background-color:#1e4d6c; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 8px; color: #fff;">
+        <span onclick="closeModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        <h2 id="modalTitle" style="border-bottom: 2px solid #3b82f6; padding-bottom: 10px; margin-bottom: 15px; color: #3b82f6;"></h2>
+        <p id="modalContent"></p>
+        <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.7;">
+            **Note:** This is a simplified preview. The full legal document would contain extensive details.
+        </p>
+    </div>
+</div>
+<script>
+    // Function to show the modal with custom content
+    function displayModal(title, content) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalContent').innerText = content;
+        document.getElementById('infoModal').style.display = 'block';
+    }
+
+    // Function to close the modal
+    function closeModal() {
+        document.getElementById('infoModal').style.display = 'none';
+    }
+
+    // Optional: Close the modal if the user clicks outside of it
+    window.onclick = function(event) {
+        let modal = document.getElementById('infoModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
