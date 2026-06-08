@@ -1,6 +1,5 @@
 // API Configuration
-const API_BASE_URL = 'http://localhost:5001/api';
-
+const API_BASE_URL = 'https://freelancer-5y96.onrender.com/api';
 // Helper function to get auth token
 function getAuthToken() {
     return localStorage.getItem('authToken');
