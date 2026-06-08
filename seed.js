@@ -1,11 +1,11 @@
+require('dotenv').config();
+
 const mongoose = require('mongoose');
 const User = require('./models/User');
 const Job = require('./models/Job');
 const ContactRequest = require('./models/ContactRequest');
 const Connection = require('./models/Connection');
-require('dotenv').config();
-
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/freelancehub';
+const connectDB = require('./config/database');
 
 // Demo Freelancers
 const demoFreelancers = [
@@ -258,11 +258,7 @@ const demoJobs = [
 async function seedDatabase() {
     try {
         // Connect to MongoDB
-        await mongoose.connect(MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log('✅ Connected to MongoDB');
+        await connectDB();
 
         // Clear existing data (optional - comment out if you want to keep existing data)
         console.log('🗑️  Clearing existing data...');
