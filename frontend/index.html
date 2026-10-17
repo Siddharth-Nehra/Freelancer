@@ -208,6 +208,35 @@
                 min-width: auto;
             }
         }
+
+        /* Dashboard Collapsible Dropdown Sections */
+        .collapsible-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .collapsible-wrapper.expanded {
+            grid-template-rows: 1fr;
+        }
+        .collapsible-inner {
+            overflow: hidden;
+            min-height: 0;
+        }
+        .collapsible-inner-content {
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .collapsible-wrapper.expanded .collapsible-inner-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .chevron-arrow {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .chevron-arrow.rotated {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-cyan-50 min-h-screen">
@@ -523,17 +552,120 @@
                 </form>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
-                <h3 class="text-2xl font-bold mb-6">Contact Requests</h3>
-                <div id="freelancer-requests" class="space-y-4">
-                    <!-- Contact requests will appear here -->
+            <!-- Contact Requests Collapsible Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+                <button type="button" onclick="toggleDashboardSection('fl-requests')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
+                    <div class="flex items-start sm:items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fas fa-envelope-open-text text-xl"></i>
+                        </div>
+                        <div>
+                            <!-- Over the section name: notification badge with count -->
+                            <div class="flex items-center space-x-2 mb-1">
+                                <div id="fl-requests-notif-container" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 transition-all duration-300">
+                                    <span id="fl-requests-notif-text"><i class="fas fa-bell-slash text-gray-400 mr-1.5"></i>No new updates (0 details)</span>
+                                </div>
+                            </div>
+                            <!-- Section Name with count badge -->
+                            <div class="flex items-center space-x-3">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Contact Requests</h3>
+                                <span id="fl-requests-count-badge" class="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-bold leading-none text-white bg-gradient-to-r from-amber-500 to-orange-600 rounded-full shadow-sm min-w-[24px]">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 flex-shrink-0 ml-4">
+                        <span id="fl-requests-status-hint" class="hidden sm:inline-block text-xs font-medium text-gray-400 group-hover:text-cyan-600 transition-colors">Click to view</span>
+                        <div id="fl-requests-chevron" class="chevron-arrow w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-cyan-50 group-hover:text-cyan-600 transition-all shadow-sm">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </button>
+                <div id="fl-requests-collapse" class="collapsible-wrapper">
+                    <div class="collapsible-inner">
+                        <div class="collapsible-inner-content p-6 sm:p-8 pt-4 border-t border-gray-100 bg-slate-50/40">
+                            <div id="freelancer-requests" class="space-y-4">
+                                <!-- Contact requests will appear here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-8">
-                <h3 class="text-2xl font-bold mb-6">My Connections</h3>
-                <div id="freelancer-connections" class="space-y-4">
-                    <!-- Accepted connections will appear here -->
+            <!-- Job Applications Collapsible Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+                <button type="button" onclick="toggleDashboardSection('fl-apps')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
+                    <div class="flex items-start sm:items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fas fa-paper-plane text-xl"></i>
+                        </div>
+                        <div>
+                            <!-- Over the section name: notification badge with count -->
+                            <div class="flex items-center space-x-2 mb-1">
+                                <div id="fl-apps-notif-container" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 transition-all duration-300">
+                                    <span id="fl-apps-notif-text"><i class="fas fa-bell-slash text-gray-400 mr-1.5"></i>No new updates (0 details)</span>
+                                </div>
+                            </div>
+                            <!-- Section Name with count badge -->
+                            <div class="flex items-center space-x-3">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Job Applications</h3>
+                                <span id="fl-apps-count-badge" class="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-bold leading-none text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full shadow-sm min-w-[24px]">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 flex-shrink-0 ml-4">
+                        <span id="fl-apps-status-hint" class="hidden sm:inline-block text-xs font-medium text-gray-400 group-hover:text-cyan-600 transition-colors">Click to view</span>
+                        <div id="fl-apps-chevron" class="chevron-arrow w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-cyan-50 group-hover:text-cyan-600 transition-all shadow-sm">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </button>
+                <div id="fl-apps-collapse" class="collapsible-wrapper">
+                    <div class="collapsible-inner">
+                        <div class="collapsible-inner-content p-6 sm:p-8 pt-4 border-t border-gray-100 bg-slate-50/40">
+                            <div id="freelancer-job-applications" class="space-y-4">
+                                <!-- Freelancer submitted applications will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Connections Collapsible Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+                <button type="button" onclick="toggleDashboardSection('fl-conn')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
+                    <div class="flex items-start sm:items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fas fa-handshake text-xl"></i>
+                        </div>
+                        <div>
+                            <!-- Over the section name: notification badge with count -->
+                            <div class="flex items-center space-x-2 mb-1">
+                                <div id="fl-conn-notif-container" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 transition-all duration-300">
+                                    <span id="fl-conn-notif-text"><i class="fas fa-bell-slash text-gray-400 mr-1.5"></i>No new updates (0 details)</span>
+                                </div>
+                            </div>
+                            <!-- Section Name with count badge -->
+                            <div class="flex items-center space-x-3">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">My Connections</h3>
+                                <span id="fl-conn-count-badge" class="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-bold leading-none text-white bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full shadow-sm min-w-[24px]">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 flex-shrink-0 ml-4">
+                        <span id="fl-conn-status-hint" class="hidden sm:inline-block text-xs font-medium text-gray-400 group-hover:text-cyan-600 transition-colors">Click to view</span>
+                        <div id="fl-conn-chevron" class="chevron-arrow w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-cyan-50 group-hover:text-cyan-600 transition-all shadow-sm">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </button>
+                <div id="fl-conn-collapse" class="collapsible-wrapper">
+                    <div class="collapsible-inner">
+                        <div class="collapsible-inner-content p-6 sm:p-8 pt-4 border-t border-gray-100 bg-slate-50/40">
+                            <div id="freelancer-connections" class="space-y-4">
+                                <!-- Accepted connections will appear here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -617,24 +749,120 @@
                 </form>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
-                <h3 class="text-2xl font-bold mb-6">My Posted Jobs</h3>
-                <div id="client-jobs-list" class="space-y-4">
-                    <!-- Jobs will appear here -->
+            <!-- My Posted Jobs Collapsible Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+                <button type="button" onclick="toggleDashboardSection('client-jobs')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
+                    <div class="flex items-start sm:items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fas fa-briefcase text-xl"></i>
+                        </div>
+                        <div>
+                            <!-- Over the section name: notification badge with count -->
+                            <div class="flex items-center space-x-2 mb-1">
+                                <div id="client-jobs-notif-container" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 transition-all duration-300">
+                                    <span id="client-jobs-notif-text"><i class="fas fa-bell-slash text-gray-400 mr-1.5"></i>No new updates (0 details)</span>
+                                </div>
+                            </div>
+                            <!-- Section Name with count badge -->
+                            <div class="flex items-center space-x-3">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">My Posted Jobs</h3>
+                                <span id="client-jobs-count-badge" class="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-bold leading-none text-white bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full shadow-sm min-w-[24px]">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 flex-shrink-0 ml-4">
+                        <span id="client-jobs-status-hint" class="hidden sm:inline-block text-xs font-medium text-gray-400 group-hover:text-cyan-600 transition-colors">Click to view</span>
+                        <div id="client-jobs-chevron" class="chevron-arrow w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-cyan-50 group-hover:text-cyan-600 transition-all shadow-sm">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </button>
+                <div id="client-jobs-collapse" class="collapsible-wrapper">
+                    <div class="collapsible-inner">
+                        <div class="collapsible-inner-content p-6 sm:p-8 pt-4 border-t border-gray-100 bg-slate-50/40">
+                            <div id="client-jobs-list" class="space-y-4">
+                                <!-- Jobs will appear here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
-                <h3 class="text-2xl font-bold mb-6">Job Applications</h3>
-                <div id="client-job-applications" class="space-y-4">
-                    <!-- Freelancer job applications will appear here -->
+            <!-- Job Applications Collapsible Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+                <button type="button" onclick="toggleDashboardSection('client-apps')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
+                    <div class="flex items-start sm:items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fas fa-file-invoice text-xl"></i>
+                        </div>
+                        <div>
+                            <!-- Over the section name: notification badge with count -->
+                            <div class="flex items-center space-x-2 mb-1">
+                                <div id="client-apps-notif-container" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 transition-all duration-300">
+                                    <span id="client-apps-notif-text"><i class="fas fa-bell-slash text-gray-400 mr-1.5"></i>No new updates (0 details)</span>
+                                </div>
+                            </div>
+                            <!-- Section Name with count badge -->
+                            <div class="flex items-center space-x-3">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Job Applications</h3>
+                                <span id="client-apps-count-badge" class="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-bold leading-none text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full shadow-sm min-w-[24px]">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 flex-shrink-0 ml-4">
+                        <span id="client-apps-status-hint" class="hidden sm:inline-block text-xs font-medium text-gray-400 group-hover:text-cyan-600 transition-colors">Click to view</span>
+                        <div id="client-apps-chevron" class="chevron-arrow w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-cyan-50 group-hover:text-cyan-600 transition-all shadow-sm">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </button>
+                <div id="client-apps-collapse" class="collapsible-wrapper">
+                    <div class="collapsible-inner">
+                        <div class="collapsible-inner-content p-6 sm:p-8 pt-4 border-t border-gray-100 bg-slate-50/40">
+                            <div id="client-job-applications" class="space-y-4">
+                                <!-- Freelancer job applications will appear here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-8">
-                <h3 class="text-2xl font-bold mb-6">My Connections</h3>
-                <div id="client-connections" class="space-y-4">
-                    <!-- Accepted connections will appear here -->
+            <!-- My Connections Collapsible Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+                <button type="button" onclick="toggleDashboardSection('client-conn')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
+                    <div class="flex items-start sm:items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
+                            <i class="fas fa-handshake text-xl"></i>
+                        </div>
+                        <div>
+                            <!-- Over the section name: notification badge with count -->
+                            <div class="flex items-center space-x-2 mb-1">
+                                <div id="client-conn-notif-container" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 transition-all duration-300">
+                                    <span id="client-conn-notif-text"><i class="fas fa-bell-slash text-gray-400 mr-1.5"></i>No new updates (0 details)</span>
+                                </div>
+                            </div>
+                            <!-- Section Name with count badge -->
+                            <div class="flex items-center space-x-3">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">My Connections</h3>
+                                <span id="client-conn-count-badge" class="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-bold leading-none text-white bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full shadow-sm min-w-[24px]">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 flex-shrink-0 ml-4">
+                        <span id="client-conn-status-hint" class="hidden sm:inline-block text-xs font-medium text-gray-400 group-hover:text-cyan-600 transition-colors">Click to view</span>
+                        <div id="client-conn-chevron" class="chevron-arrow w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-cyan-50 group-hover:text-cyan-600 transition-all shadow-sm">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </button>
+                <div id="client-conn-collapse" class="collapsible-wrapper">
+                    <div class="collapsible-inner">
+                        <div class="collapsible-inner-content p-6 sm:p-8 pt-4 border-t border-gray-100 bg-slate-50/40">
+                            <div id="client-connections" class="space-y-4">
+                                <!-- Accepted connections will appear here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1010,14 +1238,18 @@
                 const requestsResponse = await contactRequestsAPI.getFreelancerRequests();
                 document.getElementById('contact-requests-count').textContent = requestsResponse.length;
                 displayFreelancerRequests(requestsResponse);
+                updateSectionBadge('fl-requests', requestsResponse.length);
 
                 // Load job applications
                 const applicationsResponse = await jobApplicationsAPI.getMyApplications();
                 document.getElementById('job-applications-count').textContent = applicationsResponse.length;
+                displayFreelancerJobApplications(applicationsResponse);
+                updateSectionBadge('fl-apps', applicationsResponse.length);
 
                 // Load connections
                 const connectionsResponse = await connectionsAPI.getMyConnections();
                 displayFreelancerConnections(connectionsResponse);
+                updateSectionBadge('fl-conn', connectionsResponse.length);
             } catch (error) {
                 showToast('Failed to load dashboard', 'error');
             }
@@ -1104,6 +1336,10 @@
                 displayClientJobs(userJobsResponse);
                 displayClientJobApplications(jobApplicationsResponse);
                 displayClientConnections(userConnectionsResponse);
+
+                updateSectionBadge('client-jobs', userJobsResponse.length);
+                updateSectionBadge('client-apps', jobApplicationsResponse.length);
+                updateSectionBadge('client-conn', userConnectionsResponse.length);
             } catch (error) {
                 console.error(error);
                 showToast('Failed to load dashboard', 'error');
@@ -1336,6 +1572,82 @@
             } catch (error) {
                 showToast(error.message || 'Failed to send contact request', 'error');
             }
+        }
+
+        // Collapsible Dashboard Sections & Badge Helpers
+        function toggleDashboardSection(sectionId) {
+            const wrapper = document.getElementById(`${sectionId}-collapse`);
+            const chevron = document.getElementById(`${sectionId}-chevron`);
+            const statusHint = document.getElementById(`${sectionId}-status-hint`);
+
+            if (!wrapper) return;
+
+            const isExpanded = wrapper.classList.contains('expanded');
+            if (isExpanded) {
+                wrapper.classList.remove('expanded');
+                if (chevron) chevron.classList.remove('rotated');
+                if (statusHint) statusHint.textContent = 'Click to view';
+            } else {
+                wrapper.classList.add('expanded');
+                if (chevron) chevron.classList.add('rotated');
+                if (statusHint) statusHint.textContent = 'Click to hide';
+            }
+        }
+
+        function updateSectionBadge(prefix, count) {
+            const notifText = document.getElementById(`${prefix}-notif-text`);
+            const notifContainer = document.getElementById(`${prefix}-notif-container`);
+            const countBadge = document.getElementById(`${prefix}-count-badge`);
+
+            if (countBadge) {
+                countBadge.textContent = count;
+            }
+
+            if (notifText) {
+                if (count === 0) {
+                    notifText.innerHTML = '<i class="fas fa-bell-slash text-gray-400 mr-1.5"></i>No new updates (0 details)';
+                    if (notifContainer) {
+                        notifContainer.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 transition-all duration-300";
+                    }
+                } else if (count === 1) {
+                    notifText.innerHTML = '<span class="relative flex h-2 w-2 mr-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span></span><i class="fas fa-bell text-cyan-600 mr-1 text-[11px]"></i>You have 1 new update';
+                    if (notifContainer) {
+                        notifContainer.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-800 border border-cyan-200 shadow-sm transition-all duration-300";
+                    }
+                } else {
+                    notifText.innerHTML = `<span class="relative flex h-2 w-2 mr-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span></span><i class="fas fa-bell text-cyan-600 mr-1 text-[11px]"></i>You have ${count} new updates`;
+                    if (notifContainer) {
+                        notifContainer.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-800 border border-cyan-200 shadow-sm transition-all duration-300";
+                    }
+                }
+            }
+        }
+
+        function displayFreelancerJobApplications(applications) {
+            const container = document.getElementById('freelancer-job-applications');
+            if (!container) return;
+
+            if (!applications || applications.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No job applications submitted yet.</p>';
+                return;
+            }
+
+            container.innerHTML = applications.map(app => `
+                <div class="border border-gray-200 rounded-lg p-4 hover:border-cyan-200 transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${app.jobTitle || 'Applied Job'}</h4>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="far fa-calendar-alt mr-1"></i>Applied on ${new Date(app.createdAt).toLocaleDateString()}
+                            </p>
+                        </div>
+                        <span class="text-xs ${app.status === 'accepted' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'} px-2.5 py-1 rounded-full font-medium capitalize">
+                            ${app.status}
+                        </span>
+                    </div>
+                    ${app.status === 'accepted' ? '<p class="text-xs text-green-600 font-medium"><i class="fas fa-check-circle mr-1"></i>Application accepted! Check your connections to communicate.</p>' : '<p class="text-xs text-gray-500">Waiting for client review</p>'}
+                </div>
+            `).join('');
         }
 
         function displayFreelancerRequests(requests) {
