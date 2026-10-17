@@ -1060,23 +1060,52 @@
                 document.getElementById('cl-about').value = profile.about || '';
                 document.getElementById('cl-website').value = profile.website || '';
 
-                // Load stats
-                const userJobsResponse = await jobsAPI.getMyJobs();
+                let userJobsResponse = [];
+                let pendingRequestsResponse = [];
+                let jobApplicationsResponse = [];
+                let userConnectionsResponse = [];
+
+                try {
+                    const jobs = await jobsAPI.getMyJobs();
+                    if (Array.isArray(jobs)) userJobsResponse = jobs;
+                } catch (error) {
+                    console.error('Failed to load client jobs', error);
+                }
+
+                try {
+                    const requests = await contactRequestsAPI.getClientRequests();
+                    if (Array.isArray(requests)) pendingRequestsResponse = requests;
+                } catch (error) {
+                    console.error('Failed to load client requests', error);
+                }
+
+                try {
+                    const applications = await jobApplicationsAPI.getClientApplications();
+                    if (Array.isArray(applications)) jobApplicationsResponse = applications;
+                } catch (error) {
+                    console.error('Failed to load job applications', error);
+                }
+
+                try {
+                    const connections = await connectionsAPI.getMyConnections();
+                    if (Array.isArray(connections)) userConnectionsResponse = connections;
+                } catch (error) {
+                    console.error('Failed to load connections', error);
+                }
+
                 document.getElementById('posted-jobs').textContent = userJobsResponse.length;
-                
-                const pendingRequestsResponse = await contactRequestsAPI.getClientRequests();
-                const jobApplicationsResponse = await jobApplicationsAPI.getClientApplications();
+
                 const pendingContactCount = pendingRequestsResponse.filter(r => r.status === 'pending').length;
                 const pendingApplicationCount = jobApplicationsResponse.filter(r => r.status === 'pending').length;
                 document.getElementById('pending-requests').textContent = pendingContactCount + pendingApplicationCount;
 
-                const userConnectionsResponse = await connectionsAPI.getMyConnections();
                 document.getElementById('connections-count').textContent = userConnectionsResponse.length;
 
                 displayClientJobs(userJobsResponse);
                 displayClientJobApplications(jobApplicationsResponse);
                 displayClientConnections(userConnectionsResponse);
             } catch (error) {
+                console.error(error);
                 showToast('Failed to load dashboard', 'error');
             }
         }
@@ -1414,7 +1443,7 @@
                     </div>
                     <div class="text-sm text-gray-600">
                         <p><strong>Budget:</strong> $${job.budget}</p>
-                        <p><strong>Skills:</strong> ${job.skills.length > 0 ? job.skills.join(', ') : 'Not specified'}</p>
+                        <p><strong>Skills:</strong> ${job.skills && job.skills.length > 0 ? job.skills.join(', ') : 'Not specified'}</p>
                     </div>
                 </div>
             `).join('');
