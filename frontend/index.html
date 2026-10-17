@@ -1576,13 +1576,27 @@
 
         // Collapsible Dashboard Sections & Badge Helpers
         function toggleDashboardSection(sectionId) {
-            const wrapper = document.getElementById(`${sectionId}-collapse`);
+            const targetId = `${sectionId}-collapse`;
+            const wrapper = document.getElementById(targetId);
             const chevron = document.getElementById(`${sectionId}-chevron`);
             const statusHint = document.getElementById(`${sectionId}-status-hint`);
 
             if (!wrapper) return;
 
             const isExpanded = wrapper.classList.contains('expanded');
+
+            // Close all previously open sections automatically
+            document.querySelectorAll('.collapsible-wrapper').forEach(el => {
+                if (el !== wrapper && el.classList.contains('expanded')) {
+                    el.classList.remove('expanded');
+                    const baseId = el.id.replace('-collapse', '');
+                    const otherChevron = document.getElementById(`${baseId}-chevron`);
+                    const otherHint = document.getElementById(`${baseId}-status-hint`);
+                    if (otherChevron) otherChevron.classList.remove('rotated');
+                    if (otherHint) otherHint.textContent = 'Click to view';
+                }
+            });
+
             if (isExpanded) {
                 wrapper.classList.remove('expanded');
                 if (chevron) chevron.classList.remove('rotated');
