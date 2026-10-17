@@ -553,7 +553,7 @@
             </div>
 
             <!-- Contact Requests Collapsible Card -->
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+            <div class="dashboard-collapsible-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
                 <button type="button" onclick="toggleDashboardSection('fl-requests')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
                     <div class="flex items-start sm:items-center space-x-4">
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -592,7 +592,7 @@
             </div>
 
             <!-- Job Applications Collapsible Card -->
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+            <div class="dashboard-collapsible-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
                 <button type="button" onclick="toggleDashboardSection('fl-apps')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
                     <div class="flex items-start sm:items-center space-x-4">
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -631,7 +631,7 @@
             </div>
 
             <!-- My Connections Collapsible Card -->
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+            <div class="dashboard-collapsible-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
                 <button type="button" onclick="toggleDashboardSection('fl-conn')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
                     <div class="flex items-start sm:items-center space-x-4">
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -750,7 +750,7 @@
             </div>
 
             <!-- My Posted Jobs Collapsible Card -->
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+            <div class="dashboard-collapsible-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
                 <button type="button" onclick="toggleDashboardSection('client-jobs')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
                     <div class="flex items-start sm:items-center space-x-4">
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -789,7 +789,7 @@
             </div>
 
             <!-- Job Applications Collapsible Card -->
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+            <div class="dashboard-collapsible-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
                 <button type="button" onclick="toggleDashboardSection('client-apps')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
                     <div class="flex items-start sm:items-center space-x-4">
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -828,7 +828,7 @@
             </div>
 
             <!-- My Connections Collapsible Card -->
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
+            <div class="dashboard-collapsible-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
                 <button type="button" onclick="toggleDashboardSection('client-conn')" class="w-full p-6 sm:p-7 flex items-center justify-between text-left focus:outline-none transition-colors duration-200 hover:bg-slate-50/80 cursor-pointer group">
                     <div class="flex items-start sm:items-center space-x-4">
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -1575,6 +1575,19 @@
         }
 
         // Collapsible Dashboard Sections & Badge Helpers
+        function closeAllDashboardSections(exceptWrapper = null) {
+            document.querySelectorAll('.collapsible-wrapper.expanded').forEach(el => {
+                if (el !== exceptWrapper) {
+                    el.classList.remove('expanded');
+                    const baseId = el.id.replace('-collapse', '');
+                    const otherChevron = document.getElementById(`${baseId}-chevron`);
+                    const otherHint = document.getElementById(`${baseId}-status-hint`);
+                    if (otherChevron) otherChevron.classList.remove('rotated');
+                    if (otherHint) otherHint.textContent = 'Click to view';
+                }
+            });
+        }
+
         function toggleDashboardSection(sectionId) {
             const targetId = `${sectionId}-collapse`;
             const wrapper = document.getElementById(targetId);
@@ -1586,16 +1599,7 @@
             const isExpanded = wrapper.classList.contains('expanded');
 
             // Close all previously open sections automatically
-            document.querySelectorAll('.collapsible-wrapper').forEach(el => {
-                if (el !== wrapper && el.classList.contains('expanded')) {
-                    el.classList.remove('expanded');
-                    const baseId = el.id.replace('-collapse', '');
-                    const otherChevron = document.getElementById(`${baseId}-chevron`);
-                    const otherHint = document.getElementById(`${baseId}-status-hint`);
-                    if (otherChevron) otherChevron.classList.remove('rotated');
-                    if (otherHint) otherHint.textContent = 'Click to view';
-                }
-            });
+            closeAllDashboardSections(wrapper);
 
             if (isExpanded) {
                 wrapper.classList.remove('expanded');
@@ -1607,6 +1611,14 @@
                 if (statusHint) statusHint.textContent = 'Click to hide';
             }
         }
+
+        // Close sections when clicking outside of the section
+        document.addEventListener('click', (event) => {
+            if (event.target.closest('.dashboard-collapsible-card') || event.target.closest('.modal-backdrop')) {
+                return;
+            }
+            closeAllDashboardSections();
+        });
 
         function updateSectionBadge(prefix, count) {
             const notifText = document.getElementById(`${prefix}-notif-text`);
