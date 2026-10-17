@@ -147,6 +147,16 @@ const jobApplicationsAPI = {
     
     getMyApplications: async () => {
         return await apiRequest('/job-applications/freelancer/my-applications');
+    },
+
+    getClientApplications: async () => {
+        return await apiRequest('/job-applications/client/my-applications');
+    },
+
+    acceptApplication: async (applicationId) => {
+        return await apiRequest(`/job-applications/${applicationId}/accept`, {
+            method: 'POST'
+        });
     }
 };
 

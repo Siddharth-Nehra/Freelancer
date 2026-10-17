@@ -624,6 +624,13 @@
                 </div>
             </div>
 
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold mb-6">Job Applications</h3>
+                <div id="client-job-applications" class="space-y-4">
+                    <!-- Freelancer job applications will appear here -->
+                </div>
+            </div>
+
             <div class="bg-white rounded-xl shadow-lg p-8">
                 <h3 class="text-2xl font-bold mb-6">My Connections</h3>
                 <div id="client-connections" class="space-y-4">
@@ -1058,13 +1065,16 @@
                 document.getElementById('posted-jobs').textContent = userJobsResponse.length;
                 
                 const pendingRequestsResponse = await contactRequestsAPI.getClientRequests();
-                const pendingCount = pendingRequestsResponse.filter(r => r.status === 'pending').length;
-                document.getElementById('pending-requests').textContent = pendingCount;
+                const jobApplicationsResponse = await jobApplicationsAPI.getClientApplications();
+                const pendingContactCount = pendingRequestsResponse.filter(r => r.status === 'pending').length;
+                const pendingApplicationCount = jobApplicationsResponse.filter(r => r.status === 'pending').length;
+                document.getElementById('pending-requests').textContent = pendingContactCount + pendingApplicationCount;
 
                 const userConnectionsResponse = await connectionsAPI.getMyConnections();
                 document.getElementById('connections-count').textContent = userConnectionsResponse.length;
 
                 displayClientJobs(userJobsResponse);
+                displayClientJobApplications(jobApplicationsResponse);
                 displayClientConnections(userConnectionsResponse);
             } catch (error) {
                 showToast('Failed to load dashboard', 'error');
@@ -1408,6 +1418,43 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function displayClientJobApplications(applications) {
+            const container = document.getElementById('client-job-applications');
+            if (!container) return;
+
+            if (applications.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No job applications yet.</p>';
+                return;
+            }
+
+            container.innerHTML = applications.map(app => `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${app.freelancerName}</h4>
+                            <p class="text-sm text-gray-600 mt-1">Applied for: ${app.jobTitle}</p>
+                        </div>
+                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">${app.status}</span>
+                    </div>
+                    ${app.status === 'pending' ? `
+                        <button onclick="acceptJobApplication('${app.id}')" class="bg-gradient-to-r from-cyan-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-cyan-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:scale-105 text-sm font-semibold">
+                            <i class="fas fa-check mr-2"></i>Accept & Exchange Contact
+                        </button>
+                    ` : '<p class="text-sm text-green-600">Accepted</p>'}
+                </div>
+            `).join('');
+        }
+
+        async function acceptJobApplication(applicationId) {
+            try {
+                await jobApplicationsAPI.acceptApplication(applicationId);
+                showToast('Application accepted! Contact details exchanged.', 'success');
+                loadClientDashboard();
+            } catch (error) {
+                showToast(error.message || 'Failed to accept application', 'error');
+            }
         }
 
         function displayClientConnections(userConnections) {

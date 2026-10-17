@@ -4,6 +4,30 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
+// Get client's jobs (must be before /:id)
+router.get('/client/my-jobs', auth, async (req, res) => {
+  try {
+    if (req.user.type !== 'client') {
+      return res.status(403).json({ message: 'Only clients can view their jobs' });
+    }
+
+    const jobs = await Job.find({ clientId: req.user._id }).sort({ createdAt: -1 });
+    res.json(jobs.map(job => ({
+      id: job._id,
+      clientId: job.clientId,
+      clientName: job.clientName,
+      title: job.title,
+      description: job.description,
+      budget: job.budget,
+      skills: job.skills,
+      status: job.status,
+      createdAt: job.createdAt
+    })));
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 // Get all open jobs
 router.get('/', async (req, res) => {
   try {
@@ -86,30 +110,6 @@ router.post('/', auth, async (req, res) => {
         createdAt: job.createdAt
       }
     });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
-
-// Get client's jobs
-router.get('/client/my-jobs', auth, async (req, res) => {
-  try {
-    if (req.user.type !== 'client') {
-      return res.status(403).json({ message: 'Only clients can view their jobs' });
-    }
-
-    const jobs = await Job.find({ clientId: req.user._id }).sort({ createdAt: -1 });
-    res.json(jobs.map(job => ({
-      id: job._id,
-      clientId: job.clientId,
-      clientName: job.clientName,
-      title: job.title,
-      description: job.description,
-      budget: job.budget,
-      skills: job.skills,
-      status: job.status,
-      createdAt: job.createdAt
-    })));
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
