@@ -149,6 +149,8 @@ router.post('/:id/accept', auth, async (req, res) => {
       freelancerId: freelancer._id
     });
 
+    const job = await Job.findById(application.jobId);
+
     if (!connection) {
       connection = new Connection({
         clientId: req.user._id,
@@ -159,6 +161,10 @@ router.post('/:id/accept', auth, async (req, res) => {
         freelancerName: freelancer.name,
         freelancerEmail: freelancer.email,
         freelancerPhone: freelancer.phone,
+        jobId: application.jobId,
+        projectTitle: job ? job.title : application.jobTitle,
+        projectDescription: job ? job.description : `Work requirements for ${application.jobTitle}`,
+        budget: job ? `$${job.budget}` : '',
         status: 'accepted'
       });
       await connection.save();

@@ -168,6 +168,13 @@ const connectionsAPI = {
     
     getConnection: async (id) => {
         return await apiRequest(`/connections/${id}`);
+    },
+
+    emergencyQuit: async (id, workUrl, reason) => {
+        return await apiRequest(`/connections/${id}/emergency-quit`, {
+            method: 'POST',
+            body: { workUrl, reason }
+        });
     }
 };
 

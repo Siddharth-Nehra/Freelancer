@@ -149,6 +149,10 @@ router.post('/:id/accept', auth, async (req, res) => {
       freelancerEmail: req.user.email,
       freelancerPhone: req.user.phone,
       requestId: request._id,
+      projectTitle: request.summary ? (request.summary.length > 40 ? request.summary.slice(0, 40) + '...' : request.summary) : 'Client Project',
+      projectDescription: request.summary,
+      budget: request.budget || '',
+      timeline: request.timeline || '',
       status: 'accepted'
     });
 
