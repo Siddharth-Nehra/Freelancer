@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   profile: {
+    avatar: String,
     // Freelancer profile fields
     title: String,
     rate: Number,

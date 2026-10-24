@@ -115,5 +115,102 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+function formatJob(job) {
+  return {
+    id: job._id,
+    clientId: job.clientId,
+    clientName: job.clientName,
+    title: job.title,
+    description: job.description,
+    budget: job.budget,
+    skills: job.skills,
+    status: job.status,
+    createdAt: job.createdAt
+  };
+}
+
+// Update job (client owner)
+router.put('/:id', auth, async (req, res) => {
+  try {
+    if (req.user.type !== 'client') {
+      return res.status(403).json({ message: 'Only clients can update jobs' });
+    }
+
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    if (job.clientId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    const { title, description, budget, skills, status } = req.body;
+    if (title) job.title = title;
+    if (description) job.description = description;
+    if (budget !== undefined) job.budget = parseFloat(budget);
+    if (skills !== undefined) {
+      job.skills = Array.isArray(skills)
+        ? skills
+        : String(skills).split(',').map(s => s.trim()).filter(Boolean);
+    }
+    if (status && ['open', 'closed', 'in-progress', 'completed'].includes(status)) {
+      job.status = status;
+    }
+
+    await job.save();
+    res.json({ message: 'Job updated successfully', job: formatJob(job) });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Close job (client owner)
+router.post('/:id/close', auth, async (req, res) => {
+  try {
+    if (req.user.type !== 'client') {
+      return res.status(403).json({ message: 'Only clients can close jobs' });
+    }
+
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    if (job.clientId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    job.status = 'closed';
+    await job.save();
+    res.json({ message: 'Job closed successfully', job: formatJob(job) });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Delete job (client owner)
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    if (req.user.type !== 'client') {
+      return res.status(403).json({ message: 'Only clients can delete jobs' });
+    }
+
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    if (job.clientId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    await Job.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Job deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 module.exports = router;
 

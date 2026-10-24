@@ -1,5 +1,7 @@
 // API Configuration
-const API_BASE_URL = 'https://freelancer-5y96.onrender.com/api';
+const API_BASE_URL = window.API_BASE_URL ||
+    localStorage.getItem('API_BASE_URL') ||
+    'https://freelancer-5y96.onrender.com/api';
 // Helper function to get auth token
 function getAuthToken() {
     return localStorage.getItem('authToken');
@@ -82,10 +84,10 @@ const usersAPI = {
         return await apiRequest(`/users/${id}`);
     },
     
-    updateProfile: async (profileData) => {
+    updateProfile: async (profileData, extra = {}) => {
         return await apiRequest('/users/profile', {
             method: 'PUT',
-            body: { profile: profileData }
+            body: { profile: profileData, ...extra }
         });
     }
 };
@@ -109,6 +111,25 @@ const jobsAPI = {
     
     getMyJobs: async () => {
         return await apiRequest('/jobs/client/my-jobs');
+    },
+
+    updateJob: async (id, jobData) => {
+        return await apiRequest(`/jobs/${id}`, {
+            method: 'PUT',
+            body: jobData
+        });
+    },
+
+    closeJob: async (id) => {
+        return await apiRequest(`/jobs/${id}/close`, {
+            method: 'POST'
+        });
+    },
+
+    deleteJob: async (id) => {
+        return await apiRequest(`/jobs/${id}`, {
+            method: 'DELETE'
+        });
     }
 };
 
