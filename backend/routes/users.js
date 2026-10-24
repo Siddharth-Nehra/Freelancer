@@ -74,7 +74,11 @@ router.put('/profile', auth, async (req, res) => {
     
     // Update profile fields
     if (updates.profile) {
-      user.profile = { ...user.profile, ...updates.profile };
+      if (!user.profile) user.profile = {};
+      Object.keys(updates.profile).forEach(key => {
+        user.profile[key] = updates.profile[key];
+      });
+      user.markModified('profile');
     }
     
     // Update other fields if provided

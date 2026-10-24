@@ -822,11 +822,18 @@
                         <!-- Profile View Mode -->
                         <div id="fl-profile-view">
                             <div class="flex flex-col items-center text-center pb-6 border-b border-slate-100">
-                                <div class="relative">
+                                <div class="relative group cursor-pointer" onclick="openAvatarModal()" title="Click to review or change profile picture">
                                     <div class="dash-avatar" id="fl-profile-avatar">F</div>
                                     <span class="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-emerald-500 ring-4 ring-white" title="Available"></span>
+                                    <div class="absolute inset-0 rounded-full bg-slate-900/40 text-white opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-xs font-semibold backdrop-blur-[2px]">
+                                        <i class="fas fa-camera text-base mb-0.5"></i>
+                                        <span class="text-[10px]">Edit Photo</span>
+                                    </div>
                                 </div>
-                                <h3 class="text-2xl font-bold text-slate-900 mt-4 tracking-tight" id="fl-view-name">Freelancer</h3>
+                                <button type="button" onclick="openAvatarModal()" class="mt-2 text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1.5 transition">
+                                    <i class="fas fa-camera text-[11px]"></i>Change Picture
+                                </button>
+                                <h3 class="text-2xl font-bold text-slate-900 mt-2 tracking-tight" id="fl-view-name">Freelancer</h3>
                                 <p class="text-xs font-medium text-slate-400 mt-0.5" id="fl-view-handle">@freelancer</p>
                                 <span class="mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100" id="fl-view-title">
                                     Professional Title
@@ -932,9 +939,26 @@
                                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1" for="fl-portfolio">Portfolio / Website URL</label>
                                     <input type="url" id="fl-portfolio" placeholder="https://yourportfolio.com" class="dash-input">
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1" for="fl-avatar">Profile Image URL (Optional)</label>
-                                    <input type="url" id="fl-avatar" placeholder="https://example.com/avatar.jpg" class="dash-input">
+                                <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
+                                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Profile Picture</label>
+                                    <div class="flex items-center gap-3.5">
+                                        <div class="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-sm ring-2 ring-white shadow-xs shrink-0" id="fl-form-avatar-thumb">
+                                            F
+                                        </div>
+                                        <div class="flex-1 space-y-1">
+                                            <div class="flex flex-wrap gap-2">
+                                                <button type="button" onclick="openAvatarModal()" class="dash-btn-primary px-3 py-1.5 text-xs font-bold">
+                                                    <i class="fas fa-camera mr-1"></i>Photo Studio
+                                                </button>
+                                                <label class="dash-btn-ghost px-3 py-1.5 text-xs font-semibold cursor-pointer">
+                                                    <i class="fas fa-upload mr-1"></i>Upload Photo
+                                                    <input type="file" accept="image/*" class="hidden" onchange="handleFormQuickUpload(event, 'fl-avatar', 'fl-form-avatar-thumb')">
+                                                </label>
+                                            </div>
+                                            <p class="text-[11px] text-slate-400">Crop, zoom, rotate, or upload any high-res picture</p>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="fl-avatar">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1" for="fl-availability">Availability</label>
@@ -1156,11 +1180,18 @@
                         <!-- Company Profile View Mode -->
                         <div id="cl-profile-view">
                             <div class="flex flex-col items-center text-center pb-6 border-b border-slate-100">
-                                <div class="relative">
+                                <div class="relative group cursor-pointer" onclick="openAvatarModal()" title="Click to review or change company logo / picture">
                                     <div class="dash-avatar" id="cl-profile-avatar">C</div>
                                     <span class="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-blue-500 ring-4 ring-white" title="Verified Client"></span>
+                                    <div class="absolute inset-0 rounded-full bg-slate-900/40 text-white opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-xs font-semibold backdrop-blur-[2px]">
+                                        <i class="fas fa-camera text-base mb-0.5"></i>
+                                        <span class="text-[10px]">Edit Photo</span>
+                                    </div>
                                 </div>
-                                <h3 class="text-2xl font-bold text-slate-900 mt-4 tracking-tight" id="cl-view-name">Client Name</h3>
+                                <button type="button" onclick="openAvatarModal()" class="mt-2 text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1.5 transition">
+                                    <i class="fas fa-camera text-[11px]"></i>Change Picture
+                                </button>
+                                <h3 class="text-2xl font-bold text-slate-900 mt-2 tracking-tight" id="cl-view-name">Client Name</h3>
                                 <p class="text-xs font-medium text-slate-400 mt-0.5" id="cl-view-handle">@client</p>
                                 <div class="mt-2 flex items-center text-sm font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
                                     <i class="fas fa-building mr-1.5 text-xs text-indigo-500"></i>
@@ -1230,9 +1261,26 @@
                                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1" for="cl-website">Company Website</label>
                                     <input type="url" id="cl-website" placeholder="https://yourcompany.com" class="dash-input">
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1" for="cl-avatar">Logo / Avatar URL (Optional)</label>
-                                    <input type="url" id="cl-avatar" placeholder="https://example.com/logo.png" class="dash-input">
+                                <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
+                                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Company Logo / Picture</label>
+                                    <div class="flex items-center gap-3.5">
+                                        <div class="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm ring-2 ring-white shadow-xs shrink-0" id="cl-form-avatar-thumb">
+                                            C
+                                        </div>
+                                        <div class="flex-1 space-y-1">
+                                            <div class="flex flex-wrap gap-2">
+                                                <button type="button" onclick="openAvatarModal()" class="dash-btn-primary px-3 py-1.5 text-xs font-bold">
+                                                    <i class="fas fa-camera mr-1"></i>Photo Studio
+                                                </button>
+                                                <label class="dash-btn-ghost px-3 py-1.5 text-xs font-semibold cursor-pointer">
+                                                    <i class="fas fa-upload mr-1"></i>Upload Logo
+                                                    <input type="file" accept="image/*" class="hidden" onchange="handleFormQuickUpload(event, 'cl-avatar', 'cl-form-avatar-thumb')">
+                                                </label>
+                                            </div>
+                                            <p class="text-[11px] text-slate-400">Crop, zoom, rotate, or upload company logo</p>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="cl-avatar">
                                 </div>
                                 <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
                                     <button type="submit" class="dash-btn-primary px-5 py-3 w-full text-sm font-semibold">
@@ -1490,6 +1538,135 @@
         </div>
     </div>
 
+    <!-- Modal: Profile Picture Review & Edit Studio -->
+    <div id="avatar-modal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4" onclick="if(event.target === this) closeAvatarModal()">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-xl w-full border border-slate-100 modal-animated">
+            <!-- Modal Header -->
+            <div class="flex items-start justify-between pb-4 border-b border-slate-100 mb-5">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+                        <i class="fas fa-camera text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Profile Picture Studio</h3>
+                        <p class="text-xs text-slate-400">Upload, review, adjust, or select your avatar</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAvatarModal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition" aria-label="Close profile picture modal">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Review & Preview Section -->
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 mb-5">
+                <!-- Large Avatar Preview -->
+                <div class="flex flex-col items-center shrink-0">
+                    <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full ring-4 ring-white shadow-md overflow-hidden bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center text-white text-4xl font-extrabold relative group" id="avatar-preview-wrap">
+                        <span id="avatar-preview-fallback">U</span>
+                        <img id="avatar-preview-img" class="hidden w-full h-full object-cover transition-transform duration-200" alt="Avatar Preview">
+                    </div>
+                    <span class="text-[11px] font-semibold text-slate-400 mt-2">Main Profile Preview</span>
+                </div>
+
+                <!-- Mini Navbar & Badge Preview + Transform Controls -->
+                <div class="flex-1 space-y-3 text-center sm:text-left w-full">
+                    <div class="flex items-center justify-center sm:justify-start gap-3">
+                        <div class="w-9 h-9 rounded-full ring-2 ring-white shadow-xs overflow-hidden bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center text-white text-xs font-bold shrink-0" id="avatar-mini-preview-wrap">
+                            <span id="avatar-mini-preview-fallback">U</span>
+                            <img id="avatar-mini-preview-img" class="hidden w-full h-full object-cover" alt="Mini preview">
+                        </div>
+                        <div class="text-xs text-slate-500 text-left">
+                            <span class="font-bold text-slate-700 block">Navbar & Notification View</span>
+                            <span class="text-[11px] text-slate-400">Live preview of how your photo renders across navigation</span>
+                        </div>
+                    </div>
+
+                    <!-- Transform & Edit Toolbar (Zoom, Rotate, Flip) -->
+                    <div id="avatar-transform-controls" class="pt-2 border-t border-slate-200/60 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-semibold text-slate-600">
+                            <span class="flex items-center gap-1.5"><i class="fas fa-magnifying-glass text-[11px] text-indigo-500"></i> Zoom</span>
+                            <span id="avatar-zoom-val" class="text-indigo-600 font-bold">100%</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-image text-slate-400 text-xs"></i>
+                            <input type="range" id="avatar-zoom-slider" min="1" max="2.5" step="0.05" value="1" oninput="handleAvatarZoom(this.value)" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg">
+                            <i class="fas fa-image text-slate-600 text-base"></i>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 pt-1 justify-center sm:justify-start">
+                            <button type="button" onclick="rotateAvatar(90)" class="dash-btn-ghost px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-indigo-600" title="Rotate 90 degrees">
+                                <i class="fas fa-rotate-right mr-1"></i>Rotate
+                            </button>
+                            <button type="button" onclick="flipAvatarHorizontal()" class="dash-btn-ghost px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-indigo-600" title="Flip horizontal">
+                                <i class="fas fa-arrows-left-right mr-1"></i>Flip
+                            </button>
+                            <button type="button" onclick="resetAvatarTransforms()" class="dash-btn-ghost px-2.5 py-1 text-xs font-medium text-slate-500 hover:text-slate-700" title="Reset adjustments">
+                                <i class="fas fa-undo mr-1"></i>Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload / Selection Tabs -->
+            <div class="mb-4">
+                <div class="flex items-center border-b border-slate-100 gap-4 mb-3 text-xs font-bold uppercase tracking-wider">
+                    <button type="button" onclick="switchAvatarTab('upload')" id="tab-btn-avatar-upload" class="pb-2 border-b-2 border-indigo-600 text-indigo-600 transition">Upload File</button>
+                    <button type="button" onclick="switchAvatarTab('url')" id="tab-btn-avatar-url" class="pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-700 transition">Image URL</button>
+                    <button type="button" onclick="switchAvatarTab('presets')" id="tab-btn-avatar-presets" class="pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-700 transition">Modern Avatars</button>
+                </div>
+
+                <!-- Tab 1: File Upload -->
+                <div id="tab-avatar-upload" class="space-y-3">
+                    <div id="avatar-drop-zone" onclick="document.getElementById('avatar-file-input').click()" class="border-2 border-dashed border-slate-200 hover:border-indigo-400 rounded-2xl p-5 text-center cursor-pointer transition bg-slate-50/50 hover:bg-indigo-50/20 group">
+                        <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="handleAvatarFileSelect(event)">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition">
+                            <i class="fas fa-cloud-arrow-up text-base"></i>
+                        </div>
+                        <p class="text-xs font-bold text-slate-800">Click to upload or drag & drop</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">PNG, JPG, WebP, or GIF up to 8MB</p>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Image URL -->
+                <div id="tab-avatar-url" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1" for="avatar-url-input">Direct Image URL</label>
+                        <div class="flex gap-2">
+                            <input type="url" id="avatar-url-input" placeholder="https://images.unsplash.com/... or https://..." class="dash-input text-xs">
+                            <button type="button" onclick="handleLoadAvatarUrl()" class="dash-btn-ghost px-4 py-2 text-xs font-bold whitespace-nowrap">
+                                <i class="fas fa-eye mr-1"></i>Load
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Presets -->
+                <div id="tab-avatar-presets" class="hidden">
+                    <p class="text-xs text-slate-500 mb-2.5">Choose from curated professional portraits:</p>
+                    <div class="grid grid-cols-4 sm:grid-cols-6 gap-2" id="avatar-presets-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offscreen Canvas for cropping/baking adjustments -->
+            <canvas id="avatar-process-canvas" class="hidden" width="400" height="400"></canvas>
+
+            <!-- Modal Footer Actions -->
+            <div class="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                <button type="button" onclick="handleRemoveAvatar()" class="w-full sm:w-auto dash-btn-ghost px-4 py-2.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50" id="btn-remove-avatar">
+                    <i class="fas fa-trash-alt mr-1.5"></i>Remove Picture
+                </button>
+                <div class="flex items-center gap-2.5 w-full sm:w-auto">
+                    <button type="button" onclick="closeAvatarModal()" class="w-full sm:w-auto dash-btn-ghost px-5 py-2.5 text-xs font-semibold">Cancel</button>
+                    <button type="button" onclick="handleSaveAvatar()" id="save-avatar-btn" class="w-full sm:w-auto dash-btn-primary px-6 py-2.5 text-xs font-bold shadow-md shadow-indigo-600/25">
+                        <i class="fas fa-check mr-1.5"></i>Save Picture
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contact Request Modal -->
 
     <div id="contact-modal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center z-50" onclick="if(event.target === this) closeContactModal()">
@@ -1626,6 +1803,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             setupEventListeners();
+            initAvatarDropZone();
             loadStats(); // Load stats on page load
             // Load data when sections are shown
             document.querySelectorAll('.section').forEach(section => {
@@ -2079,6 +2257,15 @@
                 }
             }
 
+            const flFormThumb = document.getElementById('fl-form-avatar-thumb');
+            if (flFormThumb) {
+                if (profile.avatar) {
+                    flFormThumb.innerHTML = `<img src="${escapeHtml(profile.avatar)}" class="w-full h-full rounded-full object-cover">`;
+                } else {
+                    flFormThumb.textContent = name.charAt(0).toUpperCase();
+                }
+            }
+
             const nameInput = document.getElementById('fl-name');
             if (nameInput) nameInput.value = name;
             const avatarInput = document.getElementById('fl-avatar');
@@ -2115,6 +2302,15 @@
                     avatar.innerHTML = `<img src="${escapeHtml(profile.avatar)}" class="w-full h-full rounded-full object-cover" onerror="this.parentElement.textContent='${name.charAt(0).toUpperCase()}';">`;
                 } else {
                     avatar.textContent = name.charAt(0).toUpperCase();
+                }
+            }
+
+            const clFormThumb = document.getElementById('cl-form-avatar-thumb');
+            if (clFormThumb) {
+                if (profile.avatar) {
+                    clFormThumb.innerHTML = `<img src="${escapeHtml(profile.avatar)}" class="w-full h-full rounded-full object-cover">`;
+                } else {
+                    clFormThumb.textContent = name.charAt(0).toUpperCase();
                 }
             }
 
@@ -2634,6 +2830,7 @@
         // Close modals on Escape key
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
+                closeAvatarModal();
                 closeJobDetailModal();
                 closeJobEditModal();
                 closeContactInfoModal();
@@ -3247,6 +3444,405 @@
 
         function closeJobEditModal() {
             document.getElementById('job-edit-modal').classList.add('hidden');
+        }
+
+        // ==========================================
+        // Profile Picture Review, Upload & Edit Studio
+        // ==========================================
+        let currentAvatarState = {
+            originalSrc: '',
+            currentSrc: '',
+            zoom: 1,
+            rotation: 0,
+            flipH: false
+        };
+
+        const AVATAR_PRESETS = [
+            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80'
+        ];
+
+        function openAvatarModal() {
+            if (!currentUser) {
+                showToast('Please log in to manage your profile picture', 'error');
+                return;
+            }
+            const initialSrc = (currentUser.profile && currentUser.profile.avatar) ? currentUser.profile.avatar : '';
+            currentAvatarState = {
+                originalSrc: initialSrc,
+                currentSrc: initialSrc,
+                zoom: 1,
+                rotation: 0,
+                flipH: false
+            };
+            renderAvatarPresets();
+            updateAvatarModalPreview();
+            switchAvatarTab('upload');
+            const modal = document.getElementById('avatar-modal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeAvatarModal() {
+            const modal = document.getElementById('avatar-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function switchAvatarTab(tab) {
+            ['upload', 'url', 'presets'].forEach(t => {
+                const tabEl = document.getElementById(`tab-avatar-${t}`);
+                const btnEl = document.getElementById(`tab-btn-avatar-${t}`);
+                if (tabEl && btnEl) {
+                    if (t === tab) {
+                        tabEl.classList.remove('hidden');
+                        btnEl.className = "pb-2 border-b-2 border-indigo-600 text-indigo-600 font-bold transition";
+                    } else {
+                        tabEl.classList.add('hidden');
+                        btnEl.className = "pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-700 font-bold transition";
+                    }
+                }
+            });
+        }
+
+        function renderAvatarPresets() {
+            const grid = document.getElementById('avatar-presets-grid');
+            if (!grid) return;
+            grid.innerHTML = AVATAR_PRESETS.map((url, i) => `
+                <button type="button" onclick="selectAvatarPreset('${url}')" class="relative rounded-2xl overflow-hidden ring-2 ring-slate-100 hover:ring-indigo-500 hover:scale-105 transition aspect-square group shadow-xs">
+                    <img src="${url}" class="w-full h-full object-cover" alt="Preset ${i+1}">
+                    <div class="absolute inset-0 bg-indigo-600/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition text-xs font-bold">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function selectAvatarPreset(url) {
+            currentAvatarState.currentSrc = url;
+            resetAvatarTransforms();
+            updateAvatarModalPreview();
+            showToast('Preset avatar selected! Save changes to apply.', 'info');
+        }
+
+        function updateAvatarModalPreview() {
+            const previewImg = document.getElementById('avatar-preview-img');
+            const fallbackText = document.getElementById('avatar-preview-fallback');
+            const miniImg = document.getElementById('avatar-mini-preview-img');
+            const miniFallback = document.getElementById('avatar-mini-preview-fallback');
+            const removeBtn = document.getElementById('btn-remove-avatar');
+            const zoomVal = document.getElementById('avatar-zoom-val');
+            const zoomSlider = document.getElementById('avatar-zoom-slider');
+
+            const name = (currentUser && currentUser.name) ? currentUser.name : 'User';
+            const initial = name.charAt(0).toUpperCase();
+
+            if (fallbackText) fallbackText.textContent = initial;
+            if (miniFallback) miniFallback.textContent = initial;
+
+            if (zoomVal) zoomVal.textContent = `${Math.round(currentAvatarState.zoom * 100)}%`;
+            if (zoomSlider) zoomSlider.value = currentAvatarState.zoom;
+
+            const transformStr = `scale(${currentAvatarState.zoom}) rotate(${currentAvatarState.rotation}deg) scaleX(${currentAvatarState.flipH ? -1 : 1})`;
+
+            if (currentAvatarState.currentSrc) {
+                if (previewImg) {
+                    previewImg.src = currentAvatarState.currentSrc;
+                    previewImg.style.transform = transformStr;
+                    previewImg.classList.remove('hidden');
+                }
+                if (fallbackText) fallbackText.classList.add('hidden');
+
+                if (miniImg) {
+                    miniImg.src = currentAvatarState.currentSrc;
+                    miniImg.style.transform = transformStr;
+                    miniImg.classList.remove('hidden');
+                }
+                if (miniFallback) miniFallback.classList.add('hidden');
+
+                if (removeBtn) removeBtn.classList.remove('hidden');
+            } else {
+                if (previewImg) previewImg.classList.add('hidden');
+                if (fallbackText) fallbackText.classList.remove('hidden');
+                if (miniImg) miniImg.classList.add('hidden');
+                if (miniFallback) miniFallback.classList.remove('hidden');
+                if (removeBtn) removeBtn.classList.add('hidden');
+            }
+        }
+
+        function handleAvatarZoom(val) {
+            currentAvatarState.zoom = parseFloat(val) || 1;
+            updateAvatarModalPreview();
+        }
+
+        function rotateAvatar(deg) {
+            currentAvatarState.rotation = (currentAvatarState.rotation + deg) % 360;
+            updateAvatarModalPreview();
+        }
+
+        function flipAvatarHorizontal() {
+            currentAvatarState.flipH = !currentAvatarState.flipH;
+            updateAvatarModalPreview();
+        }
+
+        function resetAvatarTransforms() {
+            currentAvatarState.zoom = 1;
+            currentAvatarState.rotation = 0;
+            currentAvatarState.flipH = false;
+            updateAvatarModalPreview();
+        }
+
+        function handleAvatarFileSelect(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select a valid image file (PNG, JPG, WebP, GIF)', 'error');
+                return;
+            }
+            if (file.size > 8 * 1024 * 1024) {
+                showToast('Image is larger than 8MB. Please choose a smaller photo.', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                currentAvatarState.currentSrc = event.target.result;
+                resetAvatarTransforms();
+                updateAvatarModalPreview();
+                showToast('Image loaded! You can zoom, rotate, or review.', 'info');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleLoadAvatarUrl() {
+            const input = document.getElementById('avatar-url-input');
+            const url = input ? input.value.trim() : '';
+            if (!url) {
+                showToast('Please enter an image URL', 'error');
+                return;
+            }
+            const testImg = new Image();
+            testImg.onload = () => {
+                currentAvatarState.currentSrc = url;
+                resetAvatarTransforms();
+                updateAvatarModalPreview();
+                showToast('Image loaded from URL successfully!', 'success');
+            };
+            testImg.onerror = () => {
+                showToast('Could not load image from that URL. Please verify the link.', 'error');
+            };
+            testImg.src = url;
+        }
+
+        function bakeAvatarImage(state) {
+            return new Promise((resolve) => {
+                if (!state.currentSrc) {
+                    resolve('');
+                    return;
+                }
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const canvas = document.getElementById('avatar-process-canvas') || document.createElement('canvas');
+                    canvas.width = 400;
+                    canvas.height = 400;
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, 400, 400);
+
+                    ctx.save();
+                    ctx.translate(200, 200);
+
+                    if (state.flipH) ctx.scale(-1, 1);
+                    if (state.rotation) ctx.rotate((state.rotation * Math.PI) / 180);
+                    if (state.zoom) ctx.scale(state.zoom, state.zoom);
+
+                    const aspect = img.width / img.height;
+                    let drawW = 400;
+                    let drawH = 400;
+                    if (aspect > 1) {
+                        drawW = 400 * aspect;
+                        drawH = 400;
+                    } else {
+                        drawW = 400;
+                        drawH = 400 / aspect;
+                    }
+                    ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+                    ctx.restore();
+
+                    try {
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+                        resolve(dataUrl);
+                    } catch (e) {
+                        resolve(state.currentSrc);
+                    }
+                };
+                img.onerror = () => resolve(state.currentSrc);
+                img.src = state.currentSrc;
+            });
+        }
+
+        function applyAvatarToPage(avatarUrl) {
+            const name = (currentUser && currentUser.name) ? currentUser.name : 'User';
+            const initial = name.charAt(0).toUpperCase();
+
+            // Navbar Avatar
+            const navText = document.getElementById('user-avatar');
+            const navImg = document.getElementById('user-avatar-img');
+            if (navImg && navText) {
+                if (avatarUrl) {
+                    navImg.src = avatarUrl;
+                    navImg.classList.remove('hidden');
+                    navText.classList.add('hidden');
+                } else {
+                    navImg.classList.add('hidden');
+                    navText.classList.remove('hidden');
+                    navText.textContent = initial;
+                }
+            }
+
+            // Freelancer Dashboard Avatar
+            const flAvatar = document.getElementById('fl-profile-avatar');
+            if (flAvatar) {
+                if (avatarUrl) {
+                    flAvatar.innerHTML = `<img src="${escapeHtml(avatarUrl)}" class="w-full h-full rounded-full object-cover" alt="Profile Photo">`;
+                } else {
+                    flAvatar.textContent = initial;
+                }
+            }
+
+            // Client Dashboard Avatar
+            const clAvatar = document.getElementById('cl-profile-avatar');
+            if (clAvatar) {
+                if (avatarUrl) {
+                    clAvatar.innerHTML = `<img src="${escapeHtml(avatarUrl)}" class="w-full h-full rounded-full object-cover" alt="Company Logo">`;
+                } else {
+                    clAvatar.textContent = initial;
+                }
+            }
+
+            // Edit Forms Hidden Inputs & Mini Thumbnails
+            const flInput = document.getElementById('fl-avatar');
+            if (flInput) flInput.value = avatarUrl || '';
+            const clInput = document.getElementById('cl-avatar');
+            if (clInput) clInput.value = avatarUrl || '';
+
+            const flFormThumb = document.getElementById('fl-form-avatar-thumb');
+            if (flFormThumb) {
+                if (avatarUrl) {
+                    flFormThumb.innerHTML = `<img src="${escapeHtml(avatarUrl)}" class="w-full h-full rounded-full object-cover">`;
+                } else {
+                    flFormThumb.textContent = initial;
+                }
+            }
+            const clFormThumb = document.getElementById('cl-form-avatar-thumb');
+            if (clFormThumb) {
+                if (avatarUrl) {
+                    clFormThumb.innerHTML = `<img src="${escapeHtml(avatarUrl)}" class="w-full h-full rounded-full object-cover">`;
+                } else {
+                    clFormThumb.textContent = initial;
+                }
+            }
+        }
+
+        async function handleSaveAvatar() {
+            const saveBtn = document.getElementById('save-avatar-btn');
+            try {
+                if (saveBtn) setButtonLoading(saveBtn, true);
+
+                let finalAvatarUrl = '';
+                if (currentAvatarState.currentSrc) {
+                    try {
+                        finalAvatarUrl = await bakeAvatarImage(currentAvatarState);
+                    } catch (e) {
+                        finalAvatarUrl = currentAvatarState.currentSrc;
+                    }
+                }
+
+                // Update backend profile
+                const response = await usersAPI.updateProfile({ avatar: finalAvatarUrl });
+                if (response && response.user) {
+                    currentUser = response.user;
+                } else if (currentUser) {
+                    currentUser.profile = currentUser.profile || {};
+                    currentUser.profile.avatar = finalAvatarUrl;
+                }
+
+                applyAvatarToPage(finalAvatarUrl);
+                showToast(finalAvatarUrl ? 'Profile picture updated successfully! 🎉' : 'Profile picture removed', 'success');
+                closeAvatarModal();
+            } catch (error) {
+                showToast(error.message || 'Failed to save profile picture', 'error');
+            } finally {
+                if (saveBtn) setButtonLoading(saveBtn, false);
+            }
+        }
+
+        async function handleRemoveAvatar() {
+            if (!confirm('Are you sure you want to remove your profile picture? Your initials will be displayed.')) return;
+            currentAvatarState.currentSrc = '';
+            resetAvatarTransforms();
+            updateAvatarModalPreview();
+            await handleSaveAvatar();
+        }
+
+        function handleFormQuickUpload(e, inputId, thumbId) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select a valid image file', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const rawUrl = event.target.result;
+                try {
+                    const optimized = await bakeAvatarImage({ currentSrc: rawUrl, zoom: 1, rotation: 0, flipH: false });
+                    const input = document.getElementById(inputId);
+                    if (input) input.value = optimized;
+                    const thumb = document.getElementById(thumbId);
+                    if (thumb) {
+                        thumb.innerHTML = `<img src="${escapeHtml(optimized)}" class="w-full h-full rounded-full object-cover">`;
+                    }
+                    showToast('Photo uploaded! Click "Save Changes" to persist.', 'success');
+                } catch (err) {
+                    const input = document.getElementById(inputId);
+                    if (input) input.value = rawUrl;
+                    const thumb = document.getElementById(thumbId);
+                    if (thumb) {
+                        thumb.innerHTML = `<img src="${escapeHtml(rawUrl)}" class="w-full h-full rounded-full object-cover">`;
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function initAvatarDropZone() {
+            const dropZone = document.getElementById('avatar-drop-zone');
+            if (!dropZone) return;
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.add('border-indigo-500', 'bg-indigo-50/50');
+                });
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.remove('border-indigo-500', 'bg-indigo-50/50');
+                });
+            });
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const file = dt && dt.files && dt.files[0];
+                if (file) {
+                    handleAvatarFileSelect({ target: { files: [file] } });
+                }
+            });
         }
 
         async function handleUpdateJob(e) {
