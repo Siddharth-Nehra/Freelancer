@@ -1,7 +1,24 @@
-// API Configuration
-const API_BASE_URL = window.API_BASE_URL ||
-    localStorage.getItem('API_BASE_URL') ||
-    'https://freelancer-5y96.onrender.com/api';
+// API Configuration with Intelligent Fallback (Local & Cloud)
+function getPrimaryApiUrl() {
+    if (window.API_BASE_URL) return window.API_BASE_URL;
+    const stored = localStorage.getItem('API_BASE_URL');
+    if (stored) return stored;
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        return 'http://localhost:5001/api';
+    }
+    return 'https://freelancer-5y96.onrender.com/api';
+}
+
+function getFallbackApiUrl() {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        return 'https://freelancer-5y96.onrender.com/api';
+    }
+    return 'http://localhost:5001/api';
+}
+
+let activeApiBaseUrl = getPrimaryApiUrl();
+const API_BASE_URL = activeApiBaseUrl; // For backwards compatibility
+
 // Helper function to get auth token
 function getAuthToken() {
     return localStorage.getItem('authToken');
@@ -17,9 +34,8 @@ function removeAuthToken() {
     localStorage.removeItem('authToken');
 }
 
-// API request helper
+// API request helper with automatic local-to-cloud fallback
 async function apiRequest(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
     const token = getAuthToken();
     
     const config = {
@@ -34,7 +50,9 @@ async function apiRequest(endpoint, options = {}) {
         config.body = JSON.stringify(options.body);
     }
 
+    // Try primary active URL first
     try {
+        const url = `${activeApiBaseUrl}${endpoint}`;
         const response = await fetch(url, config);
         const data = await response.json().catch(() => ({}));
         
@@ -43,9 +61,24 @@ async function apiRequest(endpoint, options = {}) {
         }
         
         return data;
-    } catch (error) {
-        console.error('API Error:', error);
-        throw error;
+    } catch (primaryError) {
+        // If it's a network connection error, attempt the fallback URL
+        const fallbackUrl = activeApiBaseUrl === getPrimaryApiUrl() ? getFallbackApiUrl() : getPrimaryApiUrl();
+        if (fallbackUrl && fallbackUrl !== activeApiBaseUrl) {
+            try {
+                const retryUrl = `${fallbackUrl}${endpoint}`;
+                const response = await fetch(retryUrl, config);
+                const data = await response.json().catch(() => ({}));
+                if (response.ok) {
+                    activeApiBaseUrl = fallbackUrl; // Switch active base URL for future calls
+                    return data;
+                }
+            } catch (fallbackError) {
+                // Both failed, rethrow primary error
+            }
+        }
+        console.error('API Error:', primaryError);
+        throw primaryError;
     }
 }
 
@@ -195,6 +228,26 @@ const connectionsAPI = {
         return await apiRequest(`/connections/${id}/emergency-quit`, {
             method: 'POST',
             body: { workUrl, reason }
+        });
+    }
+};
+
+// Platform Statistics & Live Activity Feed API
+const statsAPI = {
+    getStats: async () => {
+        return await apiRequest('/stats');
+    },
+    getActivity: async () => {
+        return await apiRequest('/stats/activity');
+    }
+};
+
+// Interactive AI Assistant API
+const aiAPI = {
+    ask: async (query) => {
+        return await apiRequest('/ai/assistant', {
+            method: 'POST',
+            body: { query }
         });
     }
 };

@@ -3,29 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Siddharth Nehra — Research & Developer. Portfolio, projects, and contact.">
+  <meta name="description" content="FreelancerHub Teams — Siddharth Nehra. Research & Developer.">
   <meta name="author" content="Siddharth Nehra">
-  <title>Siddharth Nehra</title>
+  <title>FreelancerHub Teams — Siddharth Nehra</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
-      --bg: #07080d;
-      --bg-elevated: #0e1018;
-      --surface: rgba(255, 255, 255, 0.04);
-      --surface-hover: rgba(255, 255, 255, 0.07);
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #f4f4f6;
-      --text-muted: #8b8f9a;
-      --accent: #6ee7b7;
-      --accent-dim: rgba(110, 231, 183, 0.15);
-      --accent-glow: rgba(110, 231, 183, 0.35);
-      --violet: #a78bfa;
-      --gradient-1: #6ee7b7;
-      --gradient-2: #38bdf8;
-      --gradient-3: #a78bfa;
+      --bg: #03040B;
+      --bg-elevated: #070e24;
+      --surface: rgba(9, 18, 44, 0.7);
+      --surface-hover: rgba(14, 27, 66, 0.85);
+      --border: #17244a;
+      --text: #f5f7ff;
+      --text-muted: #94a3b8;
+      --accent: #00d9ff;
+      --accent-dim: rgba(0, 217, 255, 0.12);
+      --accent-glow: rgba(0, 217, 255, 0.35);
+      --violet: #762bff;
+      --pink: #f000d8;
+      --gradient-1: #00d9ff;
+      --gradient-2: #762bff;
+      --gradient-3: #f000d8;
       --radius: 16px;
       --radius-lg: 24px;
       --font: 'Outfit', system-ui, sans-serif;
@@ -34,17 +35,17 @@
     }
 
     html.light {
-      --bg: #f8f9fc;
-      --bg-elevated: #ffffff;
-      --surface: rgba(15, 23, 42, 0.04);
-      --surface-hover: rgba(15, 23, 42, 0.07);
-      --border: rgba(15, 23, 42, 0.1);
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --accent: #059669;
-      --accent-dim: rgba(5, 150, 105, 0.12);
-      --accent-glow: rgba(5, 150, 105, 0.25);
-      --violet: #7c3aed;
+      --bg: #070e24;
+      --bg-elevated: #09122c;
+      --surface: rgba(23, 36, 74, 0.5);
+      --surface-hover: rgba(27, 43, 86, 0.7);
+      --border: #1b2b54;
+      --text: #f5f7ff;
+      --text-muted: #94a3b8;
+      --accent: #00d9ff;
+      --accent-dim: rgba(0, 217, 255, 0.15);
+      --accent-glow: rgba(0, 217, 255, 0.4);
+      --violet: #762bff;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -149,19 +150,20 @@
     #theme-toggle svg { width: 18px; height: 18px; }
 
     .nav-cta {
-      padding: 0.55rem 1.1rem;
+      padding: 0.55rem 1.15rem;
       border-radius: 10px;
-      background: var(--accent);
-      color: #042f1e;
+      background: linear-gradient(135deg, #e900a0, #762bff);
+      color: #ffffff;
       font-weight: 600;
       font-size: 0.85rem;
       text-decoration: none;
       transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(233, 0, 160, 0.35);
     }
     html.light .nav-cta { color: #fff; }
     .nav-cta:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px var(--accent-glow);
+      box-shadow: 0 6px 20px rgba(233, 0, 160, 0.55);
     }
 
     .menu-btn {
@@ -265,13 +267,14 @@
       font-family: inherit;
     }
     .btn-primary {
-      background: var(--accent);
-      color: #042f1e;
+      background: linear-gradient(135deg, #e900a0, #762bff);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(233, 0, 160, 0.35);
     }
     html.light .btn-primary { color: #fff; }
     .btn-primary:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 32px var(--accent-glow);
+      box-shadow: 0 8px 28px rgba(233, 0, 160, 0.55);
     }
     .btn-ghost {
       background: var(--surface);
@@ -615,8 +618,9 @@
   <div class="orb orb-3" aria-hidden="true"></div>
 
   <nav>
-    <a href="#" class="logo">SN<span>.</span></a>
+    <a href="../index.html" class="logo">Freelancer<span style="color: #f000d8;">Hub</span> <span style="font-size: 0.8rem; color: #00d9ff; font-weight: 600; margin-left: 0.35rem; padding: 2px 8px; border-radius: 6px; background: rgba(0, 217, 255, 0.12); border: 1px solid rgba(0, 217, 255, 0.3);">Teams</span></a>
     <ul class="nav-links" id="nav-links">
+      <li><a href="../index.html" style="color: #00d9ff; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>Back to Marketplace</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="#connect">Connect</a></li>

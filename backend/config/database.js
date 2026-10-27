@@ -2,11 +2,12 @@ const mongoose = require('mongoose');
 
 async function connectDB() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/freelancerhub';
+    await mongoose.connect(mongoUri);
 
-    console.log('✅ MongoDB Atlas Connected');
+    console.log('✅ MongoDB Connected');
   } catch (error) {
-    console.error('❌ MongoDB Connection Failed');
+    console.error('❌ MongoDB Connection Failed:', error.message);
     throw error;
   }
 }
