@@ -2418,9 +2418,14 @@
                         <p class="text-[11px] text-slate-400">Ask about talent, projects, rates, or platform guidelines</p>
                     </div>
                 </div>
-                <button onclick="closeAIAssistantModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
+                <div class="flex items-center space-x-1.5">
+                    <button onclick="clearAIChatHistory()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition" title="Start New Conversation">
+                        <i class="fas fa-redo-alt text-xs"></i>
+                    </button>
+                    <button onclick="closeAIAssistantModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition" title="Close">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Chat Messages Log -->
@@ -2632,7 +2637,84 @@
             }
         }
 
-        // Interactive AI Assistant Functions
+        // Interactive AI Assistant Functions & State
+        let aiConversationHistory = [];
+
+        function formatAIMessage(rawText) {
+            if (!rawText) return '';
+            // Escape HTML for XSS prevention
+            let safe = escapeHtml(rawText);
+
+            // Inline code `code`
+            safe = safe.replace(/`([^`]+)`/g, '<code class="bg-[#0e1b42] text-cyan-300 px-1.5 py-0.5 rounded text-[11px] font-mono border border-cyan-900/40">$1</code>');
+
+            // Bold text **text**
+            safe = safe.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white font-bold">$1</strong>');
+
+            // Headings ### Header or ## Header
+            safe = safe.replace(/###\s*(.+)/g, '<div class="font-extrabold text-[#00d9ff] text-xs mt-2.5 mb-1">$1</div>');
+            safe = safe.replace(/##\s*(.+)/g, '<div class="font-extrabold text-[#f000d8] text-xs mt-3 mb-1">$1</div>');
+
+            // Parse lines for bullet/numbered lists and paragraphs
+            const lines = safe.split('\n');
+            let listType = null;
+            const output = [];
+
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
+                    if (listType !== 'ul') {
+                        if (listType === 'ol') output.push('</ol>');
+                        output.push('<ul class="list-disc pl-4 space-y-1 my-1.5 text-slate-200">');
+                        listType = 'ul';
+                    }
+                    output.push(`<li>${trimmed.substring(2)}</li>`);
+                } else if (/^\d+\.\s+/.test(trimmed)) {
+                    if (listType !== 'ol') {
+                        if (listType === 'ul') output.push('</ul>');
+                        output.push('<ol class="list-decimal pl-4 space-y-1 my-1.5 text-slate-200">');
+                        listType = 'ol';
+                    }
+                    const itemText = trimmed.replace(/^\d+\.\s+/, '');
+                    output.push(`<li>${itemText}</li>`);
+                } else {
+                    if (listType === 'ul') {
+                        output.push('</ul>');
+                        listType = null;
+                    } else if (listType === 'ol') {
+                        output.push('</ol>');
+                        listType = null;
+                    }
+                    if (trimmed.length > 0) {
+                        output.push(`<p class="mb-1.5 leading-relaxed">${trimmed}</p>`);
+                    }
+                }
+            }
+
+            if (listType === 'ul') output.push('</ul>');
+            if (listType === 'ol') output.push('</ol>');
+
+            return output.join('');
+        }
+
+        function clearAIChatHistory() {
+            aiConversationHistory = [];
+            const messagesContainer = document.getElementById('ai-chat-messages');
+            if (messagesContainer) {
+                messagesContainer.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-7 h-7 rounded-full bg-[#f000d8]/20 border border-[#f000d8]/40 text-[#f000d8] flex items-center justify-center text-xs flex-shrink-0 mt-0.5 shadow-[0_0_8px_rgba(240,0,216,0.3)]">
+                            <i class="fas fa-sparkles"></i>
+                        </div>
+                        <div class="bg-[#0b1433] border border-[#1b2b54] rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-xs text-slate-200 leading-relaxed shadow-sm">
+                            <p class="font-bold text-white mb-1">Hi! I am FreelancerHub AI.</p>
+                            <p class="text-slate-300">I can help you search talent, find projects, write proposals, or answer any question about escrow and milestone safety. How can I assist you today?</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
         function openAIAssistantModal() {
             const modal = document.getElementById('ai-assistant-modal');
             if (modal) modal.classList.remove('hidden');
@@ -2652,14 +2734,14 @@
             await handleAIChatSubmit(new Event('submit'));
         }
 
-        async function handleAIChatSubmit(e) {
+        async function handleAIChatSubmit(e, retryText = null) {
             if (e && e.preventDefault) e.preventDefault();
             const input = document.getElementById('ai-chat-input');
             const messagesContainer = document.getElementById('ai-chat-messages');
             const sendBtn = document.getElementById('ai-chat-send-btn');
             
-            if (!input || !messagesContainer) return;
-            const query = input.value.trim();
+            if (!messagesContainer) return;
+            const query = (retryText !== null ? retryText : (input ? input.value : '')).trim();
             if (!query) return;
 
             // Append user bubble
@@ -2670,10 +2752,10 @@
                     </div>
                 </div>
             `;
-            input.value = '';
+            if (input && retryText === null) input.value = '';
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Loading bubble
+            // Loading bubble with neon spinner
             const loadingId = 'ai-loading-' + Date.now();
             messagesContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start space-x-3">
@@ -2681,7 +2763,8 @@
                         <i class="fas fa-sparkles animate-spin"></i>
                     </div>
                     <div class="bg-[#0b1433] border border-[#1b2b54] rounded-2xl rounded-tl-none p-3 text-xs text-slate-400 flex items-center space-x-2">
-                        <span>Searching database...</span>
+                        <span class="inline-block w-2 h-2 rounded-full bg-[#00d9ff] animate-ping mr-1"></span>
+                        <span>FreelancerHub AI is thinking...</span>
                     </div>
                 </div>
             `;
@@ -2690,9 +2773,15 @@
             if (sendBtn) sendBtn.disabled = true;
 
             try {
-                const data = await aiAPI.ask(query);
+                const data = await aiAPI.ask(query, aiConversationHistory);
                 const loadingEl = document.getElementById(loadingId);
                 if (loadingEl) loadingEl.remove();
+
+                const replyText = data.reply || "I'm here to help with all your freelancing needs!";
+
+                // Append to multi-turn conversation history
+                aiConversationHistory.push({ role: 'user', content: query });
+                aiConversationHistory.push({ role: 'assistant', content: replyText });
 
                 let html = `
                     <div class="flex items-start space-x-3">
@@ -2700,7 +2789,7 @@
                             <i class="fas fa-sparkles"></i>
                         </div>
                         <div class="bg-[#0b1433] border border-[#1b2b54] rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-xs text-slate-200 leading-relaxed shadow-sm">
-                            <p class="leading-relaxed">${escapeHtml(data.reply || "I'm here to help with all your freelancing needs!")}</p>
+                            <div>${formatAIMessage(replyText)}</div>
                 `;
 
                 if (Array.isArray(data.freelancers) && data.freelancers.length > 0) {
@@ -2736,13 +2825,20 @@
             } catch (err) {
                 const loadingEl = document.getElementById(loadingId);
                 if (loadingEl) loadingEl.remove();
+
+                const safeQueryForRetry = escapeHtml(query).replace(/'/g, "\\'");
                 messagesContainer.innerHTML += `
                     <div class="flex items-start space-x-3">
-                        <div class="w-7 h-7 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+                        <div class="w-7 h-7 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs flex-shrink-0 mt-0.5 border border-rose-500/30">
                             <i class="fas fa-exclamation"></i>
                         </div>
-                        <div class="bg-[#0b1433] border border-rose-500/40 rounded-2xl rounded-tl-none p-3 text-xs text-rose-300">
-                            Failed to reach AI assistant. Please check your network connection and try again.
+                        <div class="bg-[#0b1433] border border-rose-500/40 rounded-2xl rounded-tl-none p-3.5 text-xs text-rose-300 max-w-[85%]">
+                            <p class="font-semibold mb-1">Failed to reach AI assistant</p>
+                            <p class="text-[11px] text-slate-300">Please check your network connection and try again.</p>
+                            <button type="button" onclick="handleAIChatSubmit(null, '${safeQueryForRetry}')" class="mt-2.5 inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-[11px] font-medium transition cursor-pointer">
+                                <i class="fas fa-redo-alt text-[10px]"></i>
+                                <span>Retry</span>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -2771,8 +2867,8 @@
             if (submitBtn) submitBtn.disabled = true;
 
             try {
-                const data = await aiAPI.ask(query);
-                respEl.innerHTML = `<span class="text-white">${escapeHtml(data.reply || '')}</span>`;
+                const data = await aiAPI.ask(query, []);
+                respEl.innerHTML = `<div class="text-white text-[11px] leading-relaxed">${formatAIMessage(data.reply || '')}</div>`;
             } catch (err) {
                 respEl.innerHTML = '<span class="text-rose-400">Could not retrieve answer. Click "Full Chat" to retry.</span>';
             } finally {

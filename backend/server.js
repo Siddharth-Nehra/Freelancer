@@ -142,56 +142,8 @@ app.get('/api/stats/activity', async (req, res) => {
 });
 
 // Interactive AI Assistant Endpoint
-app.post('/api/ai/assistant', async (req, res) => {
-  try {
-    const { query } = req.body || {};
-    const User = require('./models/User');
-    const Job = require('./models/Job');
-
-    const cleanQuery = (query || '').toLowerCase().trim();
-
-    let freelancers = [];
-    let jobs = [];
-
-    if (cleanQuery.includes('dev') || cleanQuery.includes('react') || cleanQuery.includes('code') || cleanQuery.includes('python') || cleanQuery.includes('web') || cleanQuery.includes('design')) {
-      freelancers = await User.find({
-        type: 'freelancer',
-        $or: [
-          { 'profile.title': { $regex: cleanQuery, $options: 'i' } },
-          { 'profile.skills': { $regex: cleanQuery, $options: 'i' } }
-        ]
-      }).limit(3);
-    }
-
-    if (cleanQuery.includes('job') || cleanQuery.includes('work') || cleanQuery.includes('project')) {
-      jobs = await Job.find({ status: 'open' }).limit(3);
-    }
-
-    let reply = "";
-    if (cleanQuery.includes('hire') || cleanQuery.includes('how to hire')) {
-      reply = "To hire talent on FreelancerHub: 1) Browse our Freelancers directory, 2) Filter by your required skills or rate, 3) Click 'Contact' to send your project scope and directly exchange contact info.";
-    } else if (cleanQuery.includes('post a job') || cleanQuery.includes('post job')) {
-      reply = "To post a project: Sign in with a Client account, open your Client Dashboard, enter the job title, required skills, and budget, and hit Post Job. Freelancers will start submitting proposals immediately!";
-    } else if (cleanQuery.includes('pay') || cleanQuery.includes('fee') || cleanQuery.includes('price')) {
-      reply = "FreelancerHub connects clients and freelancers directly with 100% secure milestone tracking and 0 platform fee promotions for new accounts!";
-    } else if (freelancers.length > 0) {
-      reply = `I found ${freelancers.length} matching specialist(s): ${freelancers.map(f => `${f.name} (${f.profile?.title || 'Freelancer'})`).join(', ')}. Head over to 'Find Talent' to review their full profiles!`;
-    } else if (jobs.length > 0) {
-      reply = `We have open jobs available right now! Go to 'Find Jobs' to browse active listings and submit your proposal.`;
-    } else {
-      reply = `I'm FreelancerHub AI! I can help you search talent (Full-Stack, UI/UX, Python, DevOps, Writing), post projects, or guide you through the platform. What are you looking to build today?`;
-    }
-
-    res.json({
-      success: true,
-      reply,
-      freelancers: freelancers.map(f => ({ id: f._id, name: f.name, title: f.profile?.title })),
-      jobs: jobs.map(j => ({ id: j._id, title: j.title, budget: j.budget }))
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
+const aiService = require('./services/aiService');
+app.post('/api/ai/assistant', (req, res) => aiService.handleAssistantRequest(req, res));
 
 // Test MongoDB Save
 app.get('/api/test-save', async (req, res) => {

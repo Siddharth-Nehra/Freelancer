@@ -244,10 +244,10 @@ const statsAPI = {
 
 // Interactive AI Assistant API
 const aiAPI = {
-    ask: async (query) => {
+    ask: async (query, history = []) => {
         return await apiRequest('/ai/assistant', {
             method: 'POST',
-            body: { query }
+            body: { query, history }
         });
     }
 };
